@@ -14,7 +14,99 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      offer_letters: {
+        Row: {
+          annual_increment: string
+          casual_leaves: number
+          contract_period: string
+          created_at: string
+          custom_blocks: Json
+          district: string
+          email: string
+          employee_name: string
+          hq: string
+          id: string
+          incentive_rules: string
+          joining_deadline: string
+          jurisdiction: string
+          letter_date: string
+          letter_no: string
+          medical_leaves: number
+          notice_period: string
+          pf_included: boolean
+          phone: string
+          pin_code: string
+          po: string
+          post: string
+          role: string
+          salary: string
+          sales_target: string | null
+          state: string
+          updated_at: string
+          village: string
+        }
+        Insert: {
+          annual_increment?: string
+          casual_leaves?: number
+          contract_period?: string
+          created_at?: string
+          custom_blocks?: Json
+          district?: string
+          email?: string
+          employee_name: string
+          hq?: string
+          id?: string
+          incentive_rules?: string
+          joining_deadline?: string
+          jurisdiction?: string
+          letter_date?: string
+          letter_no: string
+          medical_leaves?: number
+          notice_period?: string
+          pf_included?: boolean
+          phone?: string
+          pin_code?: string
+          po?: string
+          post?: string
+          role: string
+          salary?: string
+          sales_target?: string | null
+          state?: string
+          updated_at?: string
+          village?: string
+        }
+        Update: {
+          annual_increment?: string
+          casual_leaves?: number
+          contract_period?: string
+          created_at?: string
+          custom_blocks?: Json
+          district?: string
+          email?: string
+          employee_name?: string
+          hq?: string
+          id?: string
+          incentive_rules?: string
+          joining_deadline?: string
+          jurisdiction?: string
+          letter_date?: string
+          letter_no?: string
+          medical_leaves?: number
+          notice_period?: string
+          pf_included?: boolean
+          phone?: string
+          pin_code?: string
+          po?: string
+          post?: string
+          role?: string
+          salary?: string
+          sales_target?: string | null
+          state?: string
+          updated_at?: string
+          village?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
