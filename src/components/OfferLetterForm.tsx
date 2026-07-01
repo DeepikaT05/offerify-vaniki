@@ -25,6 +25,7 @@ import {
   type Role,
 } from "@/lib/offer-letter-types";
 import { createLetter, updateLetter } from "@/lib/offer-letter-api";
+import { STANDARD_CLAUSES, getDefaultClauseText } from "@/lib/clauses-helper";
 
 const DRAFT_KEY = "vaniki-offer-letter-draft";
 
@@ -41,11 +42,28 @@ const ROLE_CARDS: { role: Role; Icon: typeof Code; tagline: string }[] = [
 
 export function OfferLetterForm({ initial, letterId }: Props) {
   const navigate = useNavigate();
-  const [form, setForm] = useState<OfferLetterFormState>(
-    () => initial ?? defaultFormState("sales"),
-  );
+  const [form, setForm] = useState<OfferLetterFormState>(() => {
+    const base = initial ?? defaultFormState("sales");
+    const companyBlock = base.custom_blocks.find((b) => b.id === "company_details");
+    if (companyBlock) {
+      try {
+        const parsed = JSON.parse(companyBlock.content);
+        return {
+          ...base,
+          company_name: parsed.company_name ?? base.company_name,
+          company_gstin: parsed.company_gstin ?? base.company_gstin,
+          company_phone: parsed.company_phone ?? base.company_phone,
+          company_corporate_add: parsed.company_corporate_add ?? base.company_corporate_add,
+          company_shop_add: parsed.company_shop_add ?? base.company_shop_add,
+        };
+      } catch (e) {}
+    }
+    return base;
+  });
   const [saving, setSaving] = useState(false);
   const [termsOpen, setTermsOpen] = useState(true);
+  const [companyOpen, setCompanyOpen] = useState(false);
+  const [clausesOpen, setClausesOpen] = useState(false);
 
   // Auto-save draft to localStorage (new letters only)
   useEffect(() => {
@@ -53,7 +71,7 @@ export function OfferLetterForm({ initial, letterId }: Props) {
     const t = setTimeout(() => {
       try {
         localStorage.setItem(DRAFT_KEY, JSON.stringify(form));
-      } catch {}
+      } catch { }
     }, 400);
     return () => clearTimeout(t);
   }, [form, letterId]);
@@ -67,7 +85,7 @@ export function OfferLetterForm({ initial, letterId }: Props) {
         const parsed = JSON.parse(raw);
         if (parsed && typeof parsed === "object") setForm(parsed);
       }
-    } catch {}
+    } catch { }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -113,14 +131,39 @@ export function OfferLetterForm({ initial, letterId }: Props) {
       return;
     }
     setSaving(true);
+
+    const companyDetailsBlock = {
+      id: "company_details",
+      heading: "__company_details__",
+      content: JSON.stringify({
+        company_name: form.company_name ?? "VANIKI CROP SCIENCE PVT. LTD.",
+        company_gstin: form.company_gstin ?? "22AAJCV1916A1ZV",
+        company_phone: form.company_phone ?? "9302228883",
+        company_corporate_add: form.company_corporate_add ?? "Shop No.34, Krishi Upaj Mandi, Dhamdha Road, Durg 491001 (C.G.)",
+        company_shop_add: form.company_shop_add ?? "Bazar Chowk Bori, Dist-Durg 491001 (C.G.)",
+      })
+    };
+
+    const {
+      company_name,
+      company_gstin,
+      company_phone,
+      company_corporate_add,
+      company_shop_add,
+      ...dbForm
+    } = form;
+
+    const cleanBlocks = dbForm.custom_blocks.filter((b) => b.id !== "company_details");
+    dbForm.custom_blocks = [...cleanBlocks, companyDetailsBlock];
+
     try {
       const saved = letterId
-        ? await updateLetter(letterId, form)
-        : await createLetter(form);
+        ? await updateLetter(letterId, dbForm)
+        : await createLetter(dbForm);
       if (!letterId) {
         try {
           localStorage.removeItem(DRAFT_KEY);
-        } catch {}
+        } catch { }
       }
       toast.success(letterId ? "Letter updated" : "Letter created");
       navigate({ to: "/preview/$id", params: { id: saved.id } });
@@ -323,10 +366,155 @@ export function OfferLetterForm({ initial, letterId }: Props) {
         </Collapsible>
       </Card>
 
+      {/* Company & Header Details */}
+      <Card>
+        <Collapsible open={companyOpen} onOpenChange={setCompanyOpen}>
+          <CardHeader>
+            <CollapsibleTrigger className="flex w-full items-center justify-between">
+              <CardTitle className="text-base">4. Company & Header Details (Optional)</CardTitle>
+              <ChevronDown className={`h-4 w-4 transition ${companyOpen ? "rotate-180" : ""}`} />
+            </CollapsibleTrigger>
+          </CardHeader>
+          <CollapsibleContent>
+            <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Field label="Company Name">
+                <Input
+                  value={form.company_name || ""}
+                  onChange={(e) => update("company_name", e.target.value)}
+                />
+              </Field>
+              <Field label="GSTIN">
+                <Input
+                  value={form.company_gstin || ""}
+                  onChange={(e) => update("company_gstin", e.target.value)}
+                />
+              </Field>
+              <Field label="Phone/Contact">
+                <Input
+                  value={form.company_phone || ""}
+                  onChange={(e) => update("company_phone", e.target.value)}
+                />
+              </Field>
+              <div></div>
+              <Field label="Corporate Address" className="md:col-span-2">
+                <Input
+                  value={form.company_corporate_add || ""}
+                  onChange={(e) => update("company_corporate_add", e.target.value)}
+                />
+              </Field>
+              <Field label="Shop Address" className="md:col-span-2">
+                <Input
+                  value={form.company_shop_add || ""}
+                  onChange={(e) => update("company_shop_add", e.target.value)}
+                />
+              </Field>
+            </CardContent>
+          </CollapsibleContent>
+        </Collapsible>
+      </Card>
+
+      {/* Edit Standard Clauses & Text */}
+      <Card>
+        <Collapsible open={clausesOpen} onOpenChange={setClausesOpen}>
+          <CardHeader>
+            <CollapsibleTrigger className="flex w-full items-center justify-between">
+              <CardTitle className="text-base">5. Edit Standard Clauses & Letter Text (Optional Overrides)</CardTitle>
+              <ChevronDown
+                className={`h-4 w-4 transition ${clausesOpen ? "rotate-180" : ""}`}
+              />
+            </CollapsibleTrigger>
+          </CardHeader>
+          <CollapsibleContent>
+            <CardContent className="space-y-6">
+              <p className="text-xs text-neutral-600 mb-4 bg-neutral-50 border border-dashed rounded p-3 leading-relaxed">
+                💡 <strong>How to customize & format:</strong>
+                <br />
+                • Edit any clause below to customize its text. The clause will lock and stop auto-updating when you change details above.
+                <br />
+                • To make any word or sentence <strong>bold</strong>, wrap it in double asterisks like <strong>**your text**</strong> or use HTML tags like <strong>&lt;b&gt;your text&lt;/b&gt;</strong>.
+                <br />
+                • Click <strong>"Reset to Template"</strong> to return the clause back to the automatic template.
+              </p>
+              
+              {/* Group clauses by category */}
+              {Array.from(new Set(STANDARD_CLAUSES.map(c => c.category))).map(category => (
+                <div key={category} className="space-y-4">
+                  <h3 className="text-sm font-bold text-brand border-b pb-1.5">{category}</h3>
+                  <div className="grid grid-cols-1 gap-4">
+                    {STANDARD_CLAUSES.filter(c => c.category === category).map((clause) => {
+                      const overrideBlock = form.custom_blocks.find(
+                        (b) => b.id === clause.id && b.heading === "__clause_override__"
+                      );
+                      const isOverridden = !!overrideBlock;
+                      const activeText = isOverridden 
+                        ? overrideBlock.content 
+                        : getDefaultClauseText(clause.id, form);
+
+                      return (
+                        <div key={clause.id} className="rounded-lg border border-border bg-card p-4 space-y-2.5">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-neutral-700 uppercase tracking-wider">{clause.label}</span>
+                            {isOverridden ? (
+                              <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Customized</span>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-6 text-[10px] text-destructive hover:text-destructive/90 px-2"
+                                  onClick={() => {
+                                    setForm(prev => ({
+                                      ...prev,
+                                      custom_blocks: prev.custom_blocks.filter(b => b.id !== clause.id)
+                                    }));
+                                  }}
+                                >
+                                  Reset to Template
+                                </Button>
+                              </div>
+                            ) : (
+                              <span className="text-[10px] font-bold text-neutral-400 bg-neutral-50 px-2 py-0.5 rounded border">Template (Auto)</span>
+                            )}
+                          </div>
+                          
+                          <Textarea
+                            rows={3}
+                            value={activeText}
+                            placeholder="Enter custom clause text..."
+                            className={`text-xs leading-relaxed ${isOverridden ? "border-amber-300 focus-visible:ring-amber-500 font-medium" : "text-neutral-500"}`}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setForm(prev => {
+                                const cleanBlocks = prev.custom_blocks.filter(b => b.id !== clause.id);
+                                return {
+                                  ...prev,
+                                  custom_blocks: [
+                                    ...cleanBlocks,
+                                    {
+                                      id: clause.id,
+                                      heading: "__clause_override__",
+                                      content: val
+                                    }
+                                  ]
+                                };
+                              });
+                            }}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </CollapsibleContent>
+        </Collapsible>
+      </Card>
+
       {/* Custom blocks */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-base">4. Additional Clauses / Custom Content</CardTitle>
+          <CardTitle className="text-base">6. Additional Clauses / Custom Content</CardTitle>
           <Button type="button" size="sm" variant="outline" onClick={addBlock}>
             <Plus className="mr-1 h-4 w-4" /> Add Custom Block
           </Button>
