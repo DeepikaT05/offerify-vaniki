@@ -265,6 +265,14 @@ export function OfferLetterForm({ initial, letterId }: Props) {
                 placeholder="Shop no. 37, Krishi Upaj Mandi, Dhamdha Road, Durg 491001 (C.G.)"
               />
             </Field>
+            <Field label="Certificate Body Text" required className="md:col-span-2">
+              <Textarea
+                rows={4}
+                value={form.incentive_rules}
+                onChange={(e) => update("incentive_rules", e.target.value)}
+                placeholder="Certificate text..."
+              />
+            </Field>
           </CardContent>
         </Card>
       ) : (

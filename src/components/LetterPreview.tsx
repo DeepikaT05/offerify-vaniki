@@ -166,7 +166,7 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
 
               {/* Main Content Paragraph */}
               <p className="text-[15px] leading-[2.2] text-justify mb-12 text-neutral-800 tracking-wide font-normal">
-                it is certify to that the company source certificate No. <strong>{data.letter_no}</strong> Date <strong>{formatDate(data.letter_date)}</strong> has been supply to, <strong>{data.employee_name}</strong> is the authorized Stockiest of <strong>{data.company_name || "Vaniki Crop Science Private Limited"}</strong>
+                {renderFormattedText(data.incentive_rules || "")}
               </p>
             </div>
 
