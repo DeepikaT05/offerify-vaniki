@@ -129,7 +129,14 @@ function Dashboard() {
                     <TableCell className="font-mono text-xs">{l.letter_no}</TableCell>
                     <TableCell className="font-medium">{l.employee_name}</TableCell>
                     <TableCell>
-                      <Badge variant="secondary">{ROLE_LABELS[l.role]}</Badge>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <Badge variant="secondary">{ROLE_LABELS[l.role]}</Badge>
+                        {l.id.startsWith("local-") && (
+                          <Badge variant="outline" className="border-amber-300 bg-amber-50 text-amber-700 text-[10px] py-0 px-1.5 font-semibold">
+                            Local
+                          </Badge>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {formatDate(l.letter_date)}

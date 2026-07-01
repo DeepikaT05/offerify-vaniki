@@ -169,11 +169,15 @@ export function OfferLetterForm({ initial, letterId }: Props) {
           localStorage.removeItem(DRAFT_KEY);
         } catch { }
       }
-      toast.success(letterId ? "Letter updated" : "Letter created");
+      if (saved.id.startsWith("local-")) {
+        toast.info("Saved locally in browser (Offline Mode)");
+      } else {
+        toast.success(letterId ? "Letter updated online" : "Letter created online");
+      }
       navigate({ to: "/preview/$id", params: { id: saved.id } });
     } catch (err) {
       console.error(err);
-      toast.error("Could not save letter. Please try again.");
+      toast.error("An unexpected error occurred");
     } finally {
       setSaving(false);
     }
