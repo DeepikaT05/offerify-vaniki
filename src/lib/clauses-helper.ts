@@ -103,21 +103,53 @@ export function getDefaultClauseText(clauseId: string, data: OfferLetterFormStat
     case "clause_iii_ta_da":
       return `The travelling expenses shall be reimbursed as per company’s TA and DA applicable.`;
     case "clause_iv_1":
-      return data.role === "developer"
-        ? `**Deliverables:** execute tasks and assignments in alignment with project goals.`
-        : `**Relationship Building :** maintaining constant contact with dealers GST, retailers and farmers.`;
+      if (data.role === "developer") {
+        return `**Deliverables:** execute tasks and assignments in alignment with project goals.`;
+      } else if (data.role === "hr") {
+        return `**Recruitment & Sourcing:** Sourcing candidates, screening resumes, and coordinating the recruitment and onboarding process.`;
+      } else if (data.role === "field_assistant") {
+        return `**Field Operations Support:** Assisting in executing field activities, seed/crop management, and monitoring crop/soil health.`;
+      } else if (data.role === "other") {
+        return `**Task Execution:** Perform core operational tasks and assignments aligned with the department goals.`;
+      } else {
+        return `**Relationship Building :** maintaining constant contact with dealers GST, retailers and farmers.`;
+      }
     case "clause_iv_2":
-      return data.role === "developer"
-        ? `**Collaboration:** coordinate effectively with team members and management.`
-        : `**Promotion & Sales:** To promote **VANIKI** products, conduct demos, organize meetings and increase sale.`;
+      if (data.role === "developer") {
+        return `**Collaboration:** coordinate effectively with team members and management.`;
+      } else if (data.role === "hr") {
+        return `**Employee Relations:** Acting as a bridge between management and employees by addressing queries, grievances, and organizing engagement activities.`;
+      } else if (data.role === "field_assistant") {
+        return `**Farmer Engagement:** Conducting crop demonstrations, product usage guidance, and gathering farmer feedbacks.`;
+      } else if (data.role === "other") {
+        return `**Team Collaboration:** Coordinate effectively with team members, supervisors, and external stakeholders.`;
+      } else {
+        return `**Promotion & Sales:** To promote **VANIKI** products, conduct demos, organize meetings and increase sale.`;
+      }
     case "clause_iv_3":
-      return data.role === "developer"
-        ? `**Reporting:** report progress and status as per company norms.`
-        : `**Field Visits:** Visiting farms, providing technical support and reporting based on farmer feedback.`;
+      if (data.role === "developer") {
+        return `**Reporting:** report progress and status as per company norms.`;
+      } else if (data.role === "hr") {
+        return `**Policy Implementation & Compliance:** Implementing company policies, managing personnel files, and ensuring compliance with labor laws.`;
+      } else if (data.role === "field_assistant") {
+        return `**Field Data Collection:** Gathering crop yield details, pest infestation reports, and submitting periodic reports to supervisors.`;
+      } else if (data.role === "other") {
+        return `**Reporting & Documentation:** Maintain proper records, prepare routine reports, and document key processes.`;
+      } else {
+        return `**Field Visits:** Visiting farms, providing technical support and reporting based on farmer feedback.`;
+      }
     case "clause_iv_4":
-      return data.role === "developer"
-        ? `**Quality Assurance:** Ensure testing and quality control for delivered work.`
-        : `**Payments and reports:** Collect sales payment and ensure daily work repoeting as per company regulations.`;
+      if (data.role === "developer") {
+        return `**Quality Assurance:** Ensure testing and quality control for delivered work.`;
+      } else if (data.role === "hr") {
+        return `**HR Administration & Payroll:** Maintaining accurate employee records, managing attendance, and supporting payroll administration.`;
+      } else if (data.role === "field_assistant") {
+        return `**Stock & Tool Management:** Managing farm tools, safety equipment, maintaining local storage logs, and assisting sales teams.`;
+      } else if (data.role === "other") {
+        return `**Operational Quality:** Adhere to company guidelines, safety standards, and execute assignments with quality.`;
+      } else {
+        return `**Payments and reports:** Collect sales payment and ensure daily work repoeting as per company regulations.`;
+      }
     case "clause_v":
       return `No other monetary benefit shall be admissible.`;
     case "clause_vi":

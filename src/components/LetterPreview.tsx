@@ -66,6 +66,142 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
     (b) => b.heading !== "__clause_override__" && b.heading !== "__company_details__"
   );
 
+  if (data.role === "stockiest") {
+    return (
+      <article className="flex flex-col items-center gap-8 bg-muted/20 py-8 no-print-bg">
+        <style>{`
+          @media screen {
+            .no-print-bg {
+              background-color: var(--color-muted);
+            }
+          }
+          @page {
+            size: A4 portrait;
+            margin: 0mm;
+          }
+          @media print {
+            * {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+              color-adjust: exact !important;
+            }
+            html, body {
+              width: 210mm !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              background: white !important;
+            }
+            .no-print-bg {
+              background: white !important;
+              padding: 0 !important;
+              gap: 0 !important;
+              display: block !important;
+            }
+            .print-page {
+              position: relative !important;
+              box-shadow: none !important;
+              border: none !important;
+              margin: 0 !important;
+              width: 210mm !important;
+              height: 297mm !important;
+              overflow: hidden !important;
+              page-break-after: always !important;
+              break-after: page !important;
+              display: flex !important;
+              flex-direction: column !important;
+            }
+            .print-page:last-child {
+              page-break-after: avoid !important;
+              break-after: avoid !important;
+            }
+            .no-print {
+              display: none !important;
+            }
+          }
+        `}</style>
+
+        {/* Print settings toolbar */}
+        <div className="mb-2 flex flex-wrap gap-4 items-center justify-between p-4 bg-white rounded-lg border border-neutral-200 shadow-sm no-print w-[210mm] max-w-full">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-bold text-neutral-700">🖨️ Printing Configuration</span>
+          </div>
+          <div className="flex flex-wrap gap-4">
+            <label className="flex items-center gap-2 text-xs font-semibold text-neutral-600 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={usePrePrintedHeader}
+                onChange={(e) => setUsePrePrintedHeader(e.target.checked)}
+                className="rounded border-neutral-300 text-brand focus:ring-brand h-4 w-4"
+              />
+              Printing on Physical Letter Pad (hides digital letterhead image when printing)
+            </label>
+          </div>
+          <button
+            onClick={() => window.print()}
+            className="bg-brand hover:bg-brand/90 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-sm transition flex items-center gap-1.5"
+          >
+            Print Now
+          </button>
+        </div>
+
+        {/* Certificate Page */}
+        <section className="print-page relative w-[210mm] min-h-[297mm] bg-white flex flex-col justify-between shadow-lg border border-neutral-200 print:shadow-none print:border-none print:m-0 print:w-full print:min-h-0" style={{padding: 0}}>
+          {/* Letterpad Background Image */}
+          <img
+            src={letterpadBg}
+            alt="Letterpad Background"
+            className={`absolute inset-0 w-full h-full object-fill z-0 pointer-events-none${usePrePrintedHeader ? " print:hidden" : ""}`}
+          />
+
+          {/* Spacer to push body below letterhead */}
+          <div style={{height: '70mm'}} className="w-full flex-shrink-0 z-10 relative" />
+
+          {/* Body */}
+          <div className="flex-grow z-10 relative px-[22mm] pb-[20mm] pt-[10mm] flex flex-col justify-between">
+            <div>
+              {/* Title */}
+              <h2 className="text-center font-bold text-[18px] tracking-wider uppercase mb-16 mt-4 text-neutral-900 underline underline-offset-4">
+                TO WHOM SO EVER IT MAY CONCERN
+              </h2>
+
+              {/* Main Content Paragraph */}
+              <p className="text-[15px] leading-[2.2] text-justify mb-12 text-neutral-800 tracking-wide font-normal">
+                it is certify to that the company source certificate No. <strong>{data.letter_no}</strong> Date <strong>{formatDate(data.letter_date)}</strong> has been supply to, <strong>{data.employee_name}</strong> is the authorized Stockiest of <strong>{data.company_name || "Vaniki Crop Science Private Limited"}</strong>
+              </p>
+            </div>
+
+            {/* Footer details */}
+            <div className="mt-auto space-y-16">
+              {/* Place & Date, Company Signatory */}
+              <div className="flex justify-between items-start text-[14px]">
+                <div className="space-y-4">
+                  <p className="text-neutral-800">
+                    Place: <span className="font-bold underline uppercase">{data.village || "Raipur"}</span>
+                  </p>
+                  <p className="text-neutral-800">
+                    Date : <span className="font-bold">{formatDate(data.letter_date)}</span>
+                  </p>
+                </div>
+                <div className="text-right w-[340px] space-y-1">
+                  <p className="text-neutral-800 font-bold">
+                    For,{data.company_name || "Vaniki Crop Science Private Limited"}
+                  </p>
+                  
+                  {/* Spacer for physical signature/stamp */}
+                  <div className="h-24"></div>
+
+                  <p className="font-bold text-neutral-900 uppercase">Authorized Signatory</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Page Number Spacer */}
+          <div className="h-[20mm] w-full flex-shrink-0 z-10 relative" />
+        </section>
+      </article>
+    );
+  }
 
   return (
     <article className="flex flex-col items-center gap-8 bg-muted/20 py-8 no-print-bg">
@@ -309,9 +445,13 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
                       <span className="font-bold shrink-0">3)</span>
                       <p className="text-justify">{renderFormattedText(getClause("clause_iv_3"))}</p>
                     </div>
+                    <div className="flex items-start gap-3">
+                      <span className="font-bold shrink-0">4)</span>
+                      <p className="text-justify">{renderFormattedText(getClause("clause_iv_4"))}</p>
+                    </div>
                     {data.incentive_rules && (
                       <div className="flex items-start gap-3">
-                        <span className="font-bold shrink-0">4)</span>
+                        <span className="font-bold shrink-0">5)</span>
                         <div>
                           <p className="font-bold mb-1">Incentive Rules / Bonus Details</p>
                           <div className="whitespace-pre-line text-neutral-700 text-[12.5px] leading-relaxed">

@@ -1,4 +1,4 @@
-export type Role = "developer" | "sales" | "manager";
+export type Role = "developer" | "sales" | "manager" | "hr" | "field_assistant" | "other" | "stockiest";
 
 export interface CustomBlock {
   id: string;
@@ -50,6 +50,10 @@ export const ROLE_LABELS: Record<Role, string> = {
   developer: "Developer",
   sales: "Sales Officer",
   manager: "Manager",
+  hr: "HR Executive",
+  field_assistant: "Field Assistant",
+  other: "Other (Custom)",
+  stockiest: "Stockiest Certificate",
 };
 
 export const ROLE_DEFAULTS: Record<Role, Partial<OfferLetterFormState>> = {
@@ -89,6 +93,52 @@ Company reserves the right to revise policy
 Insentive Pay on Year End.`,
     joining_deadline: "15.06.2026 and in any case not later than 30.06.2026",
     jurisdiction: "DURG",
+  },
+  hr: {
+    salary: "25,000",
+    hq: "VANIKI CROP SCIENCE PVT.LTD. DURG, CHHATTISGARH",
+    sales_target: "",
+    contract_period: "one years",
+    post: "HR EXECUTIVE",
+    incentive_rules: "Performance-based annual increment as per HR policy and company standards.",
+    joining_deadline: "15.06.2026 and in any case not later than 30.06.2026",
+    jurisdiction: "DURG",
+  },
+  field_assistant: {
+    salary: "15,000",
+    hq: "VANIKI CROP SCIENCE PVT.LTD. DURG, CHHATTISGARH",
+    sales_target: "",
+    contract_period: "one years",
+    post: "FIELD ASSISTANT",
+    incentive_rules: "Field travel allowance and performance-based monthly incentives.",
+    joining_deadline: "15.06.2026 and in any case not later than 30.06.2026",
+    jurisdiction: "DURG",
+  },
+  other: {
+    salary: "20,000",
+    hq: "VANIKI CROP SCIENCE PVT.LTD. DURG, CHHATTISGARH",
+    sales_target: "",
+    contract_period: "one years",
+    post: "EXECUTIVE",
+    incentive_rules: "Performance-based incentives as per company policy.",
+    joining_deadline: "15.06.2026 and in any case not later than 30.06.2026",
+    jurisdiction: "DURG",
+  },
+  stockiest: {
+    letter_no: "05",
+    employee_name: "M/S. Unnat Krishi Sewa Kendra-Ahiwara, Dist-Drug",
+    village: "Raipur",
+    company_name: "Vaniki Crop Science Private Limited",
+    company_corporate_add: "Shop no. 37, Krishi Upaj Mandi, Dhamdha Road, Durg 491001 (C.G.)",
+    post: "STOCKIEST CERTIFICATE",
+    salary: "",
+    hq: "",
+    sales_target: "",
+    incentive_rules: "",
+    contract_period: "",
+    annual_increment: "",
+    joining_deadline: "",
+    jurisdiction: "",
   },
 };
 
