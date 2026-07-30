@@ -91,7 +91,7 @@ export function getDefaultClauseText(clauseId: string, data: OfferLetterFormStat
 
   switch (clauseId) {
     case "clause_i":
-      return `Your engagement on contract basis will be for a period of maximum up to ${data.contract_period} initially or till the age of 60years, which ever isearlier, with effect from the date of joining. The initial agreed period can be extended based on satis factory performance and depending on the requirement at the discretion of Management. The post is not against any permanent vacancy. This engagement will not entitle you to claim regular/ permanent employment in future. The engagement of your services would automatically end on the expiry of initial/ agreed period, unless an order for extension for further period is issued to you in writing.`;
+      return `Your engagement on contract basis will be for a period of maximum up to ${data.contract_period} initially or till the age of 60 years, which ever is earlier, with effect from the date of joining. The initial agreed period can be extended based on satis factory performance and depending on the requirement at the discretion of Management. The post is not against any permanent vacancy. This engagement will not entitle you to claim regular/ permanent employment in future. The engagement of your services would automatically end on the expiry of initial/ agreed period, unless an order for extension for further period is issued to you in writing.`;
     case "clause_ii":
       return `Your Headquarters will be **${data.hq}**.`;
     case "clause_iii":
@@ -148,7 +148,7 @@ export function getDefaultClauseText(clauseId: string, data: OfferLetterFormStat
       } else if (data.role === "other") {
         return `**Operational Quality:** Adhere to company guidelines, safety standards, and execute assignments with quality.`;
       } else {
-        return `**Payments and reports:** Collect sales payment and ensure daily work repoeting as per company regulations.`;
+        return `**Payments and reports:** Collect sales payment and ensure daily work reporting as per company regulations.`;
       }
     case "clause_v":
       return `No other monetary benefit shall be admissible.`;
@@ -157,29 +157,29 @@ export function getDefaultClauseText(clauseId: string, data: OfferLetterFormStat
     case "clause_vii":
       return `You will be eligible for weekly day of rest and public holidays as per rules of the Company.`;
     case "clause_viii":
-      return `You will have fild, office, material dispatch and team leads program organice etc. working per day. If required, you will have to work in also as per the instructions of directors/ In-charge of the Company.`;
+      return `You will have field, office, material dispatch and team leads program organize etc. working per day. If required, you will have to work extra hours also as per the instructions of directors/ In-charge of the Company.`;
     case "clause_ix":
       return `During the contract period, your services shall be at the disposal of the Company whole time and you will diligently and faithfully carry out the instructions given to you by your superiors in connection with your work, to the best of your skill and ability. You will not undertake any other employment either in full or part time basis. Any violation of this condition will automatically lead to termination of your engagement.`;
     case "clause_x":
       return `You will be required to work under the supervision of such officers as you may be directed to do from time to time.`;
     case "clause_2_cert":
-      return `**2.** This engagement on contract basis will be further subject to production of the following original certificates as applicable:\n(i)\tEducational and other technical & Professional qualifications\n(ii)\tProofofage (i.e10th/Matric Certificate)\n(iii)\tDischarge Certificate of previous employment.`;
+      return `**2.** This engagement on contract basis will be further subject to production of the following original certificates as applicable:\n(i)\tEducational and other technical & Professional qualifications\n(ii)\tProof of age (i.e10th/Matric Certificate)\n(iii)\tDischarge Certificate of previous employment.`;
     case "clause_3":
-      return `This engagement is subject to your not having directly or indirectly by yourself or your partner or agent, any share of interest in any contract by or on behalf of the Company, other wise than an employee of the Company.`;
+      return `This engagement is subject to your not having directly or indirectly by yourself or your partner or agent, any share of interest in any contract by or on behalf of the Company, otherwise than an employee of the Company.`;
     case "clause_4":
-      return `Notwithstanding any of the clause’s aforesaid, the management reserves the absolute right to terminate your engagement at its absolute discretion after giving you ${data.notice_period} notice or on payment of a sum equal to your consolidated pay for one month in lieu of notice, in case your performance is found to be poor or unsatisfactory or your services are no longer required.`;
+      return `Not with standing any of the clause’s aforesaid, the management reserves the absolute right to terminate your engagement at its absolute discretion after giving you ${data.notice_period} notice or on payment of a sum equal to your consolidated pay for one month in lieu of notice, in case your performance is found to be poor or unsatisfactory or your services are no longer required.`;
     case "clause_4_1":
       return `The contract may be terminated from your side by giving ${data.notice_period}’s notice or pay in lieu of ${data.notice_period}’s notice (i.e. consolidated pay in lieu of notice).`;
     case "clause_5":
       return `In case notice pay (consolidated pay in lieu of notice) is payable by either side, the notice shall be calculated solely on the basis of your monthly consolidated pay and will not include the value of any allowances or benefits you receive by virtue of the terms of your contractual engagement.`;
     case "clause_6":
-      return `You will keep secret and confidential any and all official documents and/ or information or any other data which you require or which comes to your knowledge duringyourtenure.Youshallnotcarryanydocument/paper/datacartridge/ compact disc etc. without obtaining prior and specific written permission from the controlling/ reporting officer.`;
+      return `You will keep secret and confidential any and all official documents and/ or information or any other data which you require or which comes to your knowledge during your tenure. You shall not carry any document/paper/datacartridge/ compact disc etc. without obtaining prior and specific written permission from the controlling/ reporting officer.`;
     case "clause_7":
       return `You shall at all times during your tenure maintain absolute integrity, discipline, devotion to duty, and do not indulge in any act of misconduct which is against the interest of the company. Any contravention to this condition will entail termination of your engagement.`;
     case "clause_8":
       return `You will be responsible for the safe custody of the property of the Company and always maintain the same in good condition, which may been trusted to your official use during the course of your employment and shall return all such property to the Company prior to relinquishment of your charge, failing which the cost of the same will be recovered from you by the Company.`;
     case "clause_9":
-      return `If it is revealed that any information submitted to the company by you in your application/Bio-data/declaration, is in correct or false or misleading or not matching with the advertised specifications and/ or amounting to suppression of information etc., this offer is liable to be cancelled/terminated, as the case may be, with immediate effect without any compensation whatsoever.`;
+      return `If it is revealed that any information submitted to the company by you in your application/Bio-data/declaration, is incorrect or false or misleading or not matching with the advertised specifications and/ or amounting to suppression of information etc., this offer is liable to be cancelled/terminated, as the case may be, with immediate effect without any compensation whatsoever.`;
     case "clause_10":
       return `Any other matter not specifically provided above shall be dealt with as per the discretion of the management.`;
     case "clause_11":

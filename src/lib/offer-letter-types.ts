@@ -76,7 +76,7 @@ export const ROLE_DEFAULTS: Record<Role, Partial<OfferLetterFormState>> = {
     incentive_rules: `Incentive applicable only on payment collection
 No incentive on overdue bills
 Company reserves the right to revise policy
-Insentive Pay on Year End.
+Incentive Pay on Year End.
 **Training or field experience is required for this role.**`,
     joining_deadline: "15.06.2026 and in any case not later than 30.06.2026",
     jurisdiction: "DURG",
@@ -90,7 +90,7 @@ Insentive Pay on Year End.
     incentive_rules: `Incentive applicable only on payment collection
 No incentive on overdue bills
 Company reserves the right to revise policy
-Insentive Pay on Year End.`,
+Incentive Pay on Year End.`,
     joining_deadline: "15.06.2026 and in any case not later than 30.06.2026",
     jurisdiction: "DURG",
   },
@@ -148,14 +148,14 @@ export function defaultFormState(role: Role = "sales"): OfferLetterFormState {
     letter_no: "EN06-2026",
     letter_date: today,
     role,
-    employee_name: "SHRI MANOJ BISWAS",
-    village: "P. V. 49, SITAPUR",
-    po: "GONDAHUR",
-    district: "KANKER",
-    state: "CHHATTISGARH",
-    pin_code: "494776",
-    phone: "9770378064",
-    email: "mb3125097@gmail.com",
+    employee_name: "",
+    village: "",
+    po: "",
+    district: "",
+    state: "",
+    pin_code: "",
+    phone: "",
+    email: "",
     post: "SALES OFFICER",
     salary: "22,000",
     pf_included: true,
@@ -168,7 +168,7 @@ export function defaultFormState(role: Role = "sales"): OfferLetterFormState {
     incentive_rules: `Incentive applicable only on payment collection
 No incentive on overdue bills
 Company reserves the right to revise policy
-Insentive Pay on Year End.
+Incentive Pay on Year End.
 **Training or field experience is required for this role.**`,
     notice_period: "one month",
     joining_deadline: "15.06.2026 and in any case not later than 30.06.2026",

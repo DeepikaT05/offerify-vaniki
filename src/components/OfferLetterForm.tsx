@@ -27,7 +27,7 @@ import {
 import { createLetter, updateLetter } from "@/lib/offer-letter-api";
 import { STANDARD_CLAUSES, getDefaultClauseText } from "@/lib/clauses-helper";
 
-const DRAFT_KEY = "vaniki-offer-letter-draft";
+const DRAFT_KEY = "vaniki-offer-letter-draft-v2";
 
 type Props = {
   initial?: OfferLetterFormState;
@@ -301,34 +301,64 @@ export function OfferLetterForm({ initial, letterId }: Props) {
                 <Input
                   value={form.employee_name}
                   onChange={(e) => update("employee_name", e.target.value)}
+                  placeholder="e.g. SHRI MANOJ BISWAS"
                 />
               </Field>
               <Field label="Subject / Post" required>
-                <Input value={form.post} onChange={(e) => update("post", e.target.value)} />
+                <Input
+                  value={form.post}
+                  onChange={(e) => update("post", e.target.value)}
+                  placeholder="e.g. SALES OFFICER"
+                />
               </Field>
               <Field label="Village">
-                <Input value={form.village} onChange={(e) => update("village", e.target.value)} />
+                <Input
+                  value={form.village}
+                  onChange={(e) => update("village", e.target.value)}
+                  placeholder="e.g. P. V. 49, SITAPUR"
+                />
               </Field>
               <Field label="P.O.">
-                <Input value={form.po} onChange={(e) => update("po", e.target.value)} />
+                <Input
+                  value={form.po}
+                  onChange={(e) => update("po", e.target.value)}
+                  placeholder="e.g. GONDAHUR"
+                />
               </Field>
               <Field label="District">
-                <Input value={form.district} onChange={(e) => update("district", e.target.value)} />
+                <Input
+                  value={form.district}
+                  onChange={(e) => update("district", e.target.value)}
+                  placeholder="e.g. KANKER"
+                />
               </Field>
               <Field label="State">
-                <Input value={form.state} onChange={(e) => update("state", e.target.value)} />
+                <Input
+                  value={form.state}
+                  onChange={(e) => update("state", e.target.value)}
+                  placeholder="e.g. CHHATTISGARH"
+                />
               </Field>
               <Field label="PIN Code">
-                <Input value={form.pin_code} onChange={(e) => update("pin_code", e.target.value)} />
+                <Input
+                  value={form.pin_code}
+                  onChange={(e) => update("pin_code", e.target.value)}
+                  placeholder="e.g. 494776"
+                />
               </Field>
               <Field label="Phone">
-                <Input value={form.phone} onChange={(e) => update("phone", e.target.value)} />
+                <Input
+                  value={form.phone}
+                  onChange={(e) => update("phone", e.target.value)}
+                  placeholder="e.g. 9770378064"
+                />
               </Field>
               <Field label="Email" className="md:col-span-2">
                 <Input
                   type="email"
                   value={form.email}
                   onChange={(e) => update("email", e.target.value)}
+                  placeholder="e.g. mb3125097@gmail.com"
                 />
               </Field>
             </CardContent>
