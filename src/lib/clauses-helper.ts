@@ -91,7 +91,7 @@ export function getDefaultClauseText(clauseId: string, data: OfferLetterFormStat
 
   switch (clauseId) {
     case "clause_i":
-      return `Your engagement on contract basis will be for a period of maximum up to ${data.contract_period} initially or till the age of 60 years, which ever is earlier, with effect from the date of joining. The initial agreed period can be extended based on satis factory performance and depending on the requirement at the discretion of Management. The post is not against any permanent vacancy. This engagement will not entitle you to claim regular/ permanent employment in future. The engagement of your services would automatically end on the expiry of initial/ agreed period, unless an order for extension for further period is issued to you in writing.`;
+      return `Your engagement on contract basis will be for a period of maximum up to ${data.contract_period} initially or till the age of 60 years, whichever is earlier, with effect from the date of joining. The initial agreed period can be extended based on satisfactory performance and depending on the requirement at the discretion of Management. The post is not against any permanent vacancy. This engagement will not entitle you to claim regular/ permanent employment in future. The engagement of your services would automatically end on the expiry of initial/ agreed period, unless an order for extension for further period is issued to you in writing.`;
     case "clause_ii":
       return `Your Headquarters will be **${data.hq}**.`;
     case "clause_iii":
