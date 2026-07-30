@@ -24,7 +24,7 @@ import {
   type OfferLetterFormState,
   type Role,
 } from "@/lib/offer-letter-types";
-import { createLetter, updateLetter } from "@/lib/offer-letter-api";
+import { createLetter, updateLetter, listLetters } from "@/lib/offer-letter-api";
 import { STANDARD_CLAUSES, getDefaultClauseText } from "@/lib/clauses-helper";
 
 const DRAFT_KEY = "vaniki-offer-letter-draft-v2";
@@ -92,6 +92,36 @@ export function OfferLetterForm({ initial, letterId }: Props) {
     } catch { }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Fetch letters to compute the next serial number (VN-XX) for new letter
+  useEffect(() => {
+    if (letterId || initial) return;
+    listLetters()
+      .then((letters) => {
+        let maxNum = 0;
+        letters.forEach((l) => {
+          if (l.letter_no) {
+            const match = l.letter_no.match(/VN-(\d+)/i);
+            if (match) {
+              const num = parseInt(match[1], 10);
+              if (num > maxNum) maxNum = num;
+            }
+          }
+        });
+        const nextNum = maxNum + 1;
+        const pad = nextNum.toString().padStart(2, "0");
+        const nextLetterNo = `VN-${pad}`;
+
+        setForm((prev) => {
+          // Only update if it's the fallback default ("VN-01" or "EN06-2026") or empty
+          if (prev.letter_no === "VN-01" || prev.letter_no === "EN06-2026" || !prev.letter_no) {
+            return { ...prev, letter_no: nextLetterNo };
+          }
+          return prev;
+        });
+      })
+      .catch((err) => console.error("Error fetching letters for serial number:", err));
+  }, [letterId, initial]);
 
   function update<K extends keyof OfferLetterFormState>(key: K, value: OfferLetterFormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));

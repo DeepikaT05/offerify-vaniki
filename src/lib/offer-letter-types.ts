@@ -145,7 +145,7 @@ Incentive Pay on Year End.`,
 export function defaultFormState(role: Role = "sales"): OfferLetterFormState {
   const today = new Date().toISOString().slice(0, 10);
   const base: OfferLetterFormState = {
-    letter_no: "EN06-2026",
+    letter_no: "VN-01",
     letter_date: today,
     role,
     employee_name: "",
