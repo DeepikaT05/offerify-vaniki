@@ -125,7 +125,6 @@ Incentive Pay on Year End.`,
     jurisdiction: "DURG",
   },
   stockiest: {
-    letter_no: "05",
     employee_name: "M/S. Unnat Krishi Sewa Kendra-Ahiwara, Dist-Drug",
     village: "Raipur",
     company_name: "Vaniki Crop Science Private Limited",

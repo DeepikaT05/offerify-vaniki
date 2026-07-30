@@ -23,6 +23,7 @@ import {
   type CustomBlock,
   type OfferLetterFormState,
   type Role,
+  type OfferLetterRow,
 } from "@/lib/offer-letter-types";
 import { createLetter, updateLetter, listLetters } from "@/lib/offer-letter-api";
 import { STANDARD_CLAUSES, getDefaultClauseText } from "@/lib/clauses-helper";
@@ -33,6 +34,35 @@ type Props = {
   initial?: OfferLetterFormState;
   letterId?: string;
 };
+
+function calculateNextLetterNo(role: Role, letters: OfferLetterRow[]): string {
+  if (role === "stockiest") {
+    let maxNum = 0;
+    letters.forEach((l) => {
+      if (l.role === "stockiest" && l.letter_no) {
+        const num = parseInt(l.letter_no, 10);
+        if (!isNaN(num) && num > maxNum) {
+          maxNum = num;
+        }
+      }
+    });
+    const nextNum = maxNum + 1;
+    return nextNum.toString().padStart(2, "0");
+  } else {
+    let maxNum = 0;
+    letters.forEach((l) => {
+      if (l.role !== "stockiest" && l.letter_no) {
+        const match = l.letter_no.match(/VN-(\d+)/i);
+        if (match) {
+          const num = parseInt(match[1], 10);
+          if (num > maxNum) maxNum = num;
+        }
+      }
+    });
+    const nextNum = maxNum + 1;
+    return `VN-${nextNum.toString().padStart(2, "0")}`;
+  }
+}
 
 const ROLE_CARDS: { role: Role; Icon: typeof Code; tagline: string }[] = [
   { role: "developer", Icon: Code, tagline: "Engineering & product team" },
@@ -68,6 +98,7 @@ export function OfferLetterForm({ initial, letterId }: Props) {
   const [termsOpen, setTermsOpen] = useState(true);
   const [companyOpen, setCompanyOpen] = useState(false);
   const [clausesOpen, setClausesOpen] = useState(false);
+  const [existingLetters, setExistingLetters] = useState<OfferLetterRow[]>([]);
 
   // Auto-save draft to localStorage (new letters only)
   useEffect(() => {
@@ -93,34 +124,24 @@ export function OfferLetterForm({ initial, letterId }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Fetch letters to compute the next serial number (VN-XX) for new letter
+  // Fetch letters on mount to calculate next serial numbers and save in state
   useEffect(() => {
-    if (letterId || initial) return;
     listLetters()
       .then((letters) => {
-        let maxNum = 0;
-        letters.forEach((l) => {
-          if (l.letter_no) {
-            const match = l.letter_no.match(/VN-(\d+)/i);
-            if (match) {
-              const num = parseInt(match[1], 10);
-              if (num > maxNum) maxNum = num;
-            }
-          }
-        });
-        const nextNum = maxNum + 1;
-        const pad = nextNum.toString().padStart(2, "0");
-        const nextLetterNo = `VN-${pad}`;
+        setExistingLetters(letters);
 
-        setForm((prev) => {
-          // Only update if it's the fallback default ("VN-01" or "EN06-2026") or empty
-          if (prev.letter_no === "VN-01" || prev.letter_no === "EN06-2026" || !prev.letter_no) {
-            return { ...prev, letter_no: nextLetterNo };
-          }
-          return prev;
-        });
+        // For new letters, set initial serial letter_no based on the current default role
+        if (!letterId && !initial) {
+          setForm((prev) => {
+            const nextLetterNo = calculateNextLetterNo(prev.role, letters);
+            if (prev.letter_no === "VN-01" || prev.letter_no === "EN06-2026" || !prev.letter_no) {
+              return { ...prev, letter_no: nextLetterNo };
+            }
+            return prev;
+          });
+        }
       })
-      .catch((err) => console.error("Error fetching letters for serial number:", err));
+      .catch((err) => console.error("Error fetching letters:", err));
   }, [letterId, initial]);
 
   function update<K extends keyof OfferLetterFormState>(key: K, value: OfferLetterFormState[K]) {
@@ -128,7 +149,11 @@ export function OfferLetterForm({ initial, letterId }: Props) {
   }
 
   function selectRole(role: Role) {
-    setForm((prev) => applyRoleDefaults(prev, role));
+    setForm((prev) => {
+      const updated = applyRoleDefaults(prev, role);
+      const nextLetterNo = calculateNextLetterNo(role, existingLetters);
+      return { ...updated, letter_no: nextLetterNo };
+    });
   }
 
   function addBlock() {
