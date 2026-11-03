@@ -44,6 +44,47 @@ function renderFormattedText(text: string): React.ReactNode {
   });
 }
 
+function renderSchemeText(text: string): React.ReactNode {
+  if (!text) return "";
+
+  // Replace any Devanagari digit '२' with regular '2'
+  let formatted = text.replace(/२/g, "2");
+
+  // Normalize HTML bold tags to **
+  formatted = formatted
+    .replace(/<\/?b>/gi, "**")
+    .replace(/<\/?strong>/gi, "**");
+
+  const bluePhrases = [
+    "VANIKI CROP SCIENCE PVT. LTD.",
+    "VANIKI CROP SCIENCE PVT LTD",
+    "डीलर गोल्ड स्कीम 2026-27",
+    "डीलर गोल्ड स्कीम 2026-2027",
+    "₹ 1,00,000 (एक लाख रूपये मात्र)",
+    "2 ग्राम गोल्ड स्कीम",
+    "2 ग्राम गोल्ड",
+    "Congratulations",
+  ];
+
+  for (const phrase of bluePhrases) {
+    const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const regex = new RegExp(`(?<!\\*\\*)${escaped}(?!\\*\\*)`, "g");
+    formatted = formatted.replace(regex, `**${phrase}**`);
+  }
+
+  const parts = formatted.split(/\*\*([^*]+)\*\*/g);
+  return parts.map((part, index) => {
+    if (index % 2 === 1) {
+      return (
+        <strong key={index} className="font-bold text-blue-700">
+          {part}
+        </strong>
+      );
+    }
+    return part;
+  });
+}
+
 export function LetterPreview({ data }: { data: OfferLetterFormState }) {
   const isSales = data.role === "sales";
   const isManager = data.role === "manager";
@@ -315,11 +356,6 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
           {/* Body */}
           <div className="flex-grow z-10 relative px-[22mm] pb-[16mm] pt-[6mm] flex flex-col justify-between">
             <div>
-              {/* Date on Right */}
-              <div className="text-right text-[14px] font-semibold text-neutral-800 mb-2">
-                Date: {formatDateDash(data.letter_date)}
-              </div>
-
               {/* Recipient */}
               <div className="text-[14px] text-neutral-900 leading-snug mb-5 space-y-0.5">
                 <p className="font-bold">To,</p>
@@ -486,11 +522,6 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
           {/* Body */}
           <div className="flex-grow z-10 relative px-[22mm] pb-[16mm] pt-[4mm] flex flex-col justify-between">
             <div>
-              {/* Date on Right */}
-              <div className="text-right text-[13.5px] font-bold text-neutral-800 mb-3 tracking-wide">
-                DATE - {formatDateSlash(data.letter_date)}
-              </div>
-
               {/* Recipient */}
               <div className="text-[13.5px] text-neutral-900 leading-snug mb-3 space-y-0.5">
                 <p className="font-bold">प्रति,</p>
@@ -506,31 +537,31 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
               {/* Part 1 Paragraphs */}
               <div className="space-y-2.5 text-[13px] leading-[1.75] text-neutral-800 text-justify mb-4">
                 {paragraphs1.map((p, idx) => (
-                  <p key={idx}>{renderFormattedText(p)}</p>
+                  <p key={idx}>{renderSchemeText(p)}</p>
                 ))}
               </div>
 
               {/* Target Achievement Details Table */}
               <div className="my-4">
-                <h4 className="font-bold text-[13px] text-neutral-900 mb-2">
+                <h4 className="font-bold text-[13.5px] text-blue-700 mb-2 tracking-wide">
                   Target Achievement Details
                 </h4>
-                <table className="w-full max-w-[500px] border-collapse text-[12.5px] border border-neutral-400">
+                <table className="w-full max-w-[500px] border-collapse text-[12.5px] border border-blue-400">
                   <thead>
-                    <tr className="bg-neutral-100/75 border-b border-neutral-400 font-bold text-neutral-900">
-                      <th className="border-r border-neutral-400 px-3 py-1 text-center w-12">क्र</th>
-                      <th className="border-r border-neutral-400 px-3 py-1 text-left">उत्पाद का नाम</th>
-                      <th className="border-r border-neutral-400 px-3 py-1 text-center">निर्धारित टारगेट</th>
-                      <th className="px-3 py-1 text-center">स्थिति</th>
+                    <tr className="bg-blue-50/70 border-b border-blue-400 font-bold text-blue-700">
+                      <th className="border-r border-blue-400 px-3 py-1.5 text-center w-12 text-blue-700">क्र</th>
+                      <th className="border-r border-blue-400 px-3 py-1.5 text-left text-blue-700">उत्पाद का नाम</th>
+                      <th className="border-r border-blue-400 px-3 py-1.5 text-center text-blue-700">निर्धारित टारगेट</th>
+                      <th className="px-3 py-1.5 text-center text-blue-700">स्थिति</th>
                     </tr>
                   </thead>
                   <tbody>
                     {products.map((prod, idx) => (
-                      <tr key={prod.id || idx} className="border-b border-neutral-300">
-                        <td className="border-r border-neutral-300 px-3 py-1 text-center font-medium">{idx + 1}</td>
-                        <td className="border-r border-neutral-300 px-3 py-1 text-left font-bold uppercase">{prod.name}</td>
-                        <td className="border-r border-neutral-300 px-3 py-1 text-center">{prod.target}</td>
-                        <td className="px-3 py-1 text-center font-semibold text-emerald-700">{prod.status}</td>
+                      <tr key={prod.id || idx} className="border-b border-blue-200">
+                        <td className="border-r border-blue-200 px-3 py-1.5 text-center font-bold text-blue-700">{idx + 1}</td>
+                        <td className="border-r border-blue-200 px-3 py-1.5 text-left font-bold uppercase text-blue-700">{prod.name}</td>
+                        <td className="border-r border-blue-200 px-3 py-1.5 text-center font-bold text-blue-700">{prod.target}</td>
+                        <td className="px-3 py-1.5 text-center font-bold text-blue-700">{prod.status}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -542,24 +573,24 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
                 {paragraphs2.map((p, idx) => {
                   if (p.toLowerCase().includes("congratulations")) {
                     return (
-                      <div key={idx} className="font-serif italic font-bold text-[16px] text-neutral-900 my-2">
-                        {renderFormattedText(p)}
+                      <div key={idx} className="font-serif italic font-bold text-[17px] text-blue-700 my-2.5 tracking-wide">
+                        Congratulations
                       </div>
                     );
                   }
-                  return <p key={idx}>{renderFormattedText(p)}</p>;
+                  return <p key={idx}>{renderSchemeText(p)}</p>;
                 })}
               </div>
             </div>
 
             {/* Footer Signatory */}
             <div className="mt-6 space-y-1 text-[13px]">
-              <p className="font-bold text-neutral-900 uppercase">
+              <p className="font-bold text-blue-700 uppercase">
                 {data.company_name || "VANIKI CROP SCIENCE PVT. LTD."}
               </p>
               <div className="h-16"></div>
               <p className="font-bold text-neutral-900">{data.jurisdiction || "अधिकृत हस्ताक्षरकर्ता"}</p>
-              <p className="font-bold text-neutral-900 uppercase text-[12px]">
+              <p className="font-bold text-blue-700 uppercase text-[12px]">
                 {data.company_name || "VANIKI CROP SCIENCE PVT LTD"}
               </p>
             </div>

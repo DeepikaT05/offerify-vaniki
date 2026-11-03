@@ -601,7 +601,7 @@ export function OfferLetterForm({ initial, letterId }: Props) {
                 <Input
                   value={form.hq}
                   onChange={(e) => update("hq", e.target.value)}
-                  placeholder="२ ग्राम गोल्ड स्कीम"
+                  placeholder="2 ग्राम गोल्ड स्कीम"
                 />
               </Field>
               <Field label="कंपनी का नाम (Company Name)" required>
@@ -719,7 +719,7 @@ export function OfferLetterForm({ initial, letterId }: Props) {
                   const company = form.company_name || "VANIKI CROP SCIENCE PVT. LTD.";
                   const scheme = form.contract_period || "डीलर गोल्ड स्कीम 2026-27";
                   const amount = form.salary || "₹ 1,00,000 (एक लाख रूपये मात्र)";
-                  const reward = form.hq || "२ ग्राम गोल्ड स्कीम";
+                  const reward = form.hq || "2 ग्राम गोल्ड स्कीम";
                   update(
                     "incentive_rules",
                     `महोदय,\nहमे यह बताते हुए हर्ष हो रहा है की **${company}** द्वारा संचालित **${scheme}** के अंतर्गत कंपनी में आपका **${amount}** की राशि सफलतापूर्वक जमा कर दी गई है।\nइसके साथ ही, आपने निर्धारित खरीद टारगेट भी सफलतापूर्वक प्राप्त कर लिया है। आपकी इस उपलब्धि के लिए हम आपको हार्दिक बधाई देते है।\n\n---TABLE---\n\n**Congratulations**\n\nआपको यह सूचित करते हुए प्रसन्नता हो रही है की आपने निर्धारित खरीद टारगेट पूरा कर लिया है तथा जमा राशि की शर्त भी सफलतापूर्वक पूरी कर ली है। अतः आप कंपनी की **${reward}** के अंतर्गत लाभ प्राप्त करने के लिए पात्र है।\n\nहम आपके विश्वास, सहयोग एवं कंपनी के उत्पादों के प्रति आपके योगदान की सराहना करते है। भविष्य में भी आपके साथ हमारे व्यवसायिक संबंध और अधिक मजबूत एवं सफल बने रहे, यही हमारी कामना है।\n\nहार्दिक शुभकामनाएँ सहित,`
