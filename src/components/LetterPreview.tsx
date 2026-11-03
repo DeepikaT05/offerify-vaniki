@@ -76,7 +76,7 @@ function renderSchemeText(text: string): React.ReactNode {
   return parts.map((part, index) => {
     if (index % 2 === 1) {
       return (
-        <strong key={index} className="font-bold text-blue-700">
+        <strong key={index} className="font-bold text-blue-900">
           {part}
         </strong>
       );
@@ -543,25 +543,25 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
 
               {/* Target Achievement Details Table */}
               <div className="my-4">
-                <h4 className="font-bold text-[13.5px] text-blue-700 mb-2 tracking-wide">
+                <h4 className="font-bold text-[13.5px] text-blue-900 mb-2 tracking-wide">
                   Target Achievement Details
                 </h4>
-                <table className="w-full max-w-[500px] border-collapse text-[12.5px] border border-blue-400">
+                <table className="w-full max-w-[500px] border-collapse text-[12.5px] border-2 border-blue-900">
                   <thead>
-                    <tr className="bg-blue-50/70 border-b border-blue-400 font-bold text-blue-700">
-                      <th className="border-r border-blue-400 px-3 py-1.5 text-center w-12 text-blue-700">क्र</th>
-                      <th className="border-r border-blue-400 px-3 py-1.5 text-left text-blue-700">उत्पाद का नाम</th>
-                      <th className="border-r border-blue-400 px-3 py-1.5 text-center text-blue-700">निर्धारित टारगेट</th>
-                      <th className="px-3 py-1.5 text-center text-blue-700">स्थिति</th>
+                    <tr className="bg-blue-100/70 border-b-2 border-blue-900 font-bold text-blue-900">
+                      <th className="border-r border-blue-900 px-3 py-1.5 text-center w-12 text-blue-900">क्र</th>
+                      <th className="border-r border-blue-900 px-3 py-1.5 text-left text-blue-900">उत्पाद का नाम</th>
+                      <th className="border-r border-blue-900 px-3 py-1.5 text-center text-blue-900">निर्धारित टारगेट</th>
+                      <th className="px-3 py-1.5 text-center text-blue-900">स्थिति</th>
                     </tr>
                   </thead>
                   <tbody>
                     {products.map((prod, idx) => (
-                      <tr key={prod.id || idx} className="border-b border-blue-200">
-                        <td className="border-r border-blue-200 px-3 py-1.5 text-center font-bold text-blue-700">{idx + 1}</td>
-                        <td className="border-r border-blue-200 px-3 py-1.5 text-left font-bold uppercase text-blue-700">{prod.name}</td>
-                        <td className="border-r border-blue-200 px-3 py-1.5 text-center font-bold text-blue-700">{prod.target}</td>
-                        <td className="px-3 py-1.5 text-center font-bold text-blue-700">{prod.status}</td>
+                      <tr key={prod.id || idx} className="border-b border-blue-800/40">
+                        <td className="border-r border-blue-800/40 px-3 py-1.5 text-center font-bold text-blue-900">{idx + 1}</td>
+                        <td className="border-r border-blue-800/40 px-3 py-1.5 text-left font-bold uppercase text-blue-900">{prod.name}</td>
+                        <td className="border-r border-blue-800/40 px-3 py-1.5 text-center font-bold text-blue-900">{prod.target}</td>
+                        <td className="px-3 py-1.5 text-center font-bold text-blue-900">{prod.status}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -573,7 +573,7 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
                 {paragraphs2.map((p, idx) => {
                   if (p.toLowerCase().includes("congratulations")) {
                     return (
-                      <div key={idx} className="font-serif italic font-bold text-[17px] text-blue-700 my-2.5 tracking-wide">
+                      <div key={idx} className="font-serif italic font-bold text-[17px] text-blue-900 my-2.5 tracking-wide">
                         Congratulations
                       </div>
                     );
@@ -585,12 +585,12 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
 
             {/* Footer Signatory */}
             <div className="mt-6 space-y-1 text-[13px]">
-              <p className="font-bold text-blue-700 uppercase">
+              <p className="font-bold text-blue-900 uppercase">
                 {data.company_name || "VANIKI CROP SCIENCE PVT. LTD."}
               </p>
               <div className="h-16"></div>
               <p className="font-bold text-neutral-900">{data.jurisdiction || "अधिकृत हस्ताक्षरकर्ता"}</p>
-              <p className="font-bold text-blue-700 uppercase text-[12px]">
+              <p className="font-bold text-blue-900 uppercase text-[12px]">
                 {data.company_name || "VANIKI CROP SCIENCE PVT LTD"}
               </p>
             </div>
