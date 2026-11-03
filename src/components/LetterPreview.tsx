@@ -349,27 +349,14 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
             </div>
 
             {/* Footer Signatures */}
-            <div className="mt-8 flex justify-between items-end text-[13.5px]">
+            <div className="mt-8 text-[13.5px]">
               {/* Left Signatory */}
               <div className="space-y-1">
                 <p className="text-neutral-900">Yours sincerely,</p>
                 <p className="font-bold text-neutral-900">{data.company_name || "Vaniki Crop Science Pvt. Ltd."}</p>
-                <div className="h-16 flex items-center">
-                  <span className="text-xs text-neutral-400 italic font-mono">[Signature]</span>
-                </div>
+                <div className="h-16"></div>
                 <p className="text-neutral-800"><span className="font-medium">Name:</span> {data.joining_deadline || "Sajal Kumar Tamrakar"}</p>
                 <p className="text-neutral-800"><span className="font-medium">Designation:</span> {data.jurisdiction || "Manager, Vaniki Crop Science Pvt Ltd"}</p>
-              </div>
-
-              {/* Right Acknowledgment Box */}
-              <div className="border border-indigo-900/60 rounded px-6 py-3 text-center min-w-[210px] space-y-1 shadow-sm bg-white/70">
-                <p className="font-bold text-[12px] uppercase text-indigo-950 tracking-wider">
-                  {data.village || "SHIV SHAKTI KRISHI KENDRA"}
-                </p>
-                <div className="h-12 flex items-center justify-center">
-                  <span className="text-xs text-neutral-400 italic font-mono">[Stamp / Signature]</span>
-                </div>
-                <p className="text-[12px] font-semibold text-neutral-700">Proprietor</p>
               </div>
             </div>
           </div>
@@ -570,9 +557,7 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
               <p className="font-bold text-neutral-900 uppercase">
                 {data.company_name || "VANIKI CROP SCIENCE PVT. LTD."}
               </p>
-              <div className="h-16 flex items-center">
-                <span className="text-xs text-neutral-400 italic font-mono">[अधिकृत हस्ताक्षर]</span>
-              </div>
+              <div className="h-16"></div>
               <p className="font-bold text-neutral-900">{data.jurisdiction || "अधिकृत हस्ताक्षरकर्ता"}</p>
               <p className="font-bold text-neutral-900 uppercase text-[12px]">
                 {data.company_name || "VANIKI CROP SCIENCE PVT LTD"}

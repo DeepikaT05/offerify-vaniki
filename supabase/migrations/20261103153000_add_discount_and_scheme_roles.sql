@@ -15,3 +15,4 @@ BEGIN
 END $$;
 
 ALTER TABLE public.offer_letters ADD CONSTRAINT offer_letters_role_check CHECK (role IN ('developer', 'sales', 'manager', 'hr', 'field_assistant', 'other', 'stockiest', 'lifting_discount', 'dealer_scheme'));
+
