@@ -1,7 +1,23 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { Briefcase, Code, GripVertical, Loader2, Plus, Trash2, UserCog, Users, Sprout, Settings, FileText } from "lucide-react";
+import {
+  Briefcase,
+  Code,
+  GripVertical,
+  Loader2,
+  Plus,
+  Trash2,
+  UserCog,
+  Users,
+  Sprout,
+  Settings,
+  FileText,
+  Percent,
+  Award,
+  RefreshCw,
+  ChevronDown,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +30,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDown } from "lucide-react";
 
 import {
   applyRoleDefaults,
@@ -35,6 +50,30 @@ type Props = {
   letterId?: string;
 };
 
+interface SchemeProduct {
+  id: string;
+  name: string;
+  target: string;
+  status: string;
+}
+
+function parseSchemeProducts(jsonStr?: string): SchemeProduct[] {
+  if (!jsonStr) {
+    return [
+      { id: "1", name: "HULK", target: "100 LTR", status: "Achieved" },
+      { id: "2", name: "RUBICON", target: "50 LTR", status: "Achieved" },
+    ];
+  }
+  try {
+    const parsed = JSON.parse(jsonStr);
+    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+  } catch (e) {}
+  return [
+    { id: "1", name: "HULK", target: "100 LTR", status: "Achieved" },
+    { id: "2", name: "RUBICON", target: "50 LTR", status: "Achieved" },
+  ];
+}
+
 function calculateNextLetterNo(role: Role, letters: OfferLetterRow[]): string {
   if (role === "stockiest") {
     let maxNum = 0;
@@ -48,10 +87,41 @@ function calculateNextLetterNo(role: Role, letters: OfferLetterRow[]): string {
     });
     const nextNum = maxNum + 1;
     return nextNum.toString().padStart(2, "0");
+  } else if (role === "lifting_discount") {
+    let maxNum = 0;
+    letters.forEach((l) => {
+      if (l.role === "lifting_discount" && l.letter_no) {
+        const match = l.letter_no.match(/LD-(\d+)/i);
+        if (match) {
+          const num = parseInt(match[1], 10);
+          if (num > maxNum) maxNum = num;
+        }
+      }
+    });
+    const nextNum = maxNum + 1;
+    return `LD-${nextNum.toString().padStart(2, "0")}`;
+  } else if (role === "dealer_scheme") {
+    let maxNum = 0;
+    letters.forEach((l) => {
+      if (l.role === "dealer_scheme" && l.letter_no) {
+        const match = l.letter_no.match(/DS-(\d+)/i);
+        if (match) {
+          const num = parseInt(match[1], 10);
+          if (num > maxNum) maxNum = num;
+        }
+      }
+    });
+    const nextNum = maxNum + 1;
+    return `DS-${nextNum.toString().padStart(2, "0")}`;
   } else {
     let maxNum = 0;
     letters.forEach((l) => {
-      if (l.role !== "stockiest" && l.letter_no) {
+      if (
+        l.role !== "stockiest" &&
+        l.role !== "lifting_discount" &&
+        l.role !== "dealer_scheme" &&
+        l.letter_no
+      ) {
         const match = l.letter_no.match(/VN-(\d+)/i);
         if (match) {
           const num = parseInt(match[1], 10);
@@ -72,6 +142,8 @@ const ROLE_CARDS: { role: Role; Icon: typeof Code; tagline: string }[] = [
   { role: "field_assistant", Icon: Sprout, tagline: "Field operations & farming" },
   { role: "other", Icon: Settings, tagline: "Customizable/other roles" },
   { role: "stockiest", Icon: FileText, tagline: "Stockiest Authorization" },
+  { role: "lifting_discount", Icon: Percent, tagline: "Product discount offer" },
+  { role: "dealer_scheme", Icon: Award, tagline: "Gold scheme & targets" },
 ];
 
 export function OfferLetterForm({ initial, letterId }: Props) {
@@ -334,6 +406,344 @@ export function OfferLetterForm({ initial, letterId }: Props) {
             </Field>
           </CardContent>
         </Card>
+      ) : form.role === "lifting_discount" ? (
+        <div className="space-y-6">
+          <Card className="border-l-4 border-l-brand">
+            <CardHeader>
+              <CardTitle className="text-base">2. Lifting Discount Recipient & Offer Details</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Field label="Letter / Ref No." required>
+                <Input value={form.letter_no} onChange={(e) => update("letter_no", e.target.value)} />
+              </Field>
+              <Field label="Date" required>
+                <Input
+                  type="date"
+                  value={form.letter_date}
+                  onChange={(e) => update("letter_date", e.target.value)}
+                />
+              </Field>
+              <Field label="Contact Person (e.g. Mr Manoj Pathak)" required>
+                <Input
+                  value={form.employee_name}
+                  onChange={(e) => update("employee_name", e.target.value)}
+                  placeholder="Mr Manoj Pathak"
+                />
+              </Field>
+              <Field label="Dealer / Firm Name (e.g. Shiv Shakti Krishi Kendra)" required>
+                <Input
+                  value={form.village}
+                  onChange={(e) => update("village", e.target.value)}
+                  placeholder="Shiv Shakti Krishi Kendra"
+                />
+              </Field>
+              <Field label="Address / Location" required className="md:col-span-2">
+                <Input
+                  value={form.district}
+                  onChange={(e) => update("district", e.target.value)}
+                  placeholder="Manpur Chowk, Khamhartola, Balod (C.G.)"
+                />
+              </Field>
+              <Field label="Contact No.">
+                <Input
+                  value={form.phone}
+                  onChange={(e) => update("phone", e.target.value)}
+                  placeholder="9617932488"
+                />
+              </Field>
+              <Field label="Dealer GSTIN">
+                <Input
+                  value={form.email}
+                  onChange={(e) => update("email", e.target.value)}
+                  placeholder="22AXDPP6919K1Z7"
+                />
+              </Field>
+              <Field label="Subject" required className="md:col-span-2">
+                <Input
+                  value={form.post}
+                  onChange={(e) => update("post", e.target.value)}
+                  placeholder="Special Lifting Discount of ₹200 Per Litre on Hulk"
+                />
+              </Field>
+              <Field label="Product Name" required>
+                <Input
+                  value={form.hq}
+                  onChange={(e) => update("hq", e.target.value)}
+                  placeholder="Hulk"
+                />
+              </Field>
+              <Field label="Discount Amount / Rate" required>
+                <Input
+                  value={form.salary}
+                  onChange={(e) => update("salary", e.target.value)}
+                  placeholder="₹200 (Rupees Two Hundred Only) per litre"
+                />
+              </Field>
+              <Field label="Minimum Purchase Quantity" required>
+                <Input
+                  value={form.contract_period}
+                  onChange={(e) => update("contract_period", e.target.value)}
+                  placeholder="100 litres"
+                />
+              </Field>
+              <Field label="Company Name">
+                <Input
+                  value={form.company_name || ""}
+                  onChange={(e) => update("company_name", e.target.value)}
+                  placeholder="Vaniki Crop Science Pvt. Ltd."
+                />
+              </Field>
+              <Field label="Signatory Name">
+                <Input
+                  value={form.joining_deadline}
+                  onChange={(e) => update("joining_deadline", e.target.value)}
+                  placeholder="Sajal Kumar Tamrakar"
+                />
+              </Field>
+              <Field label="Signatory Designation">
+                <Input
+                  value={form.jurisdiction}
+                  onChange={(e) => update("jurisdiction", e.target.value)}
+                  placeholder="Manager, Vaniki Crop Science Pvt Ltd"
+                />
+              </Field>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-base">3. Full Editable Letter Body</CardTitle>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const discount = form.salary || "₹200 (Rupees Two Hundred Only) per litre";
+                  const product = form.hq || "Hulk";
+                  const minQty = form.contract_period || "100 litres";
+                  update(
+                    "incentive_rules",
+                    `We are pleased to offer you a special lifting discount of **${discount}** on **${product}**, subject to a minimum purchase quantity of **${minQty}**.\n\nWe value your association with our company and look forward to strengthening our business relationship in the future.\n\nWe request you to kindly take advantage of this special offer.\n\nThank you for your continued trust and support.`
+                  );
+                  toast.success("Updated text from fields!");
+                }}
+              >
+                <RefreshCw className="mr-1.5 h-3.5 w-3.5" /> Auto-Fill Body
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                rows={7}
+                value={form.incentive_rules}
+                onChange={(e) => update("incentive_rules", e.target.value)}
+                placeholder="Enter letter body text..."
+                className="text-sm leading-relaxed"
+              />
+              <p className="mt-2 text-xs text-muted-foreground">
+                Wrap any text in <strong>**double asterisks**</strong> to make it <strong>bold</strong>.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      ) : form.role === "dealer_scheme" ? (
+        <div className="space-y-6">
+          <Card className="border-l-4 border-l-brand">
+            <CardHeader>
+              <CardTitle className="text-base">2. डीलर एवं गोल्ड स्कीम विवरण (Dealer & Gold Scheme Details)</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Field label="रेफरेंस नं. (Ref No.)" required>
+                <Input value={form.letter_no} onChange={(e) => update("letter_no", e.target.value)} />
+              </Field>
+              <Field label="दिनांक (Date)" required>
+                <Input
+                  type="date"
+                  value={form.letter_date}
+                  onChange={(e) => update("letter_date", e.target.value)}
+                />
+              </Field>
+              <Field label="डीलर का नाम (Dealer Name)" required>
+                <Input
+                  value={form.employee_name}
+                  onChange={(e) => update("employee_name", e.target.value)}
+                  placeholder="शिव शक्ति कृषि केंद्र"
+                />
+              </Field>
+              <Field label="स्थान / पता (Location)" required>
+                <Input
+                  value={form.village}
+                  onChange={(e) => update("village", e.target.value)}
+                  placeholder="दल्लीराजहरा, (छ.ग.)"
+                />
+              </Field>
+              <Field label="विषय (Subject)" required className="md:col-span-2">
+                <Input
+                  value={form.post}
+                  onChange={(e) => update("post", e.target.value)}
+                  placeholder="डीलर गोल्ड स्कीम 2026-2027 के अंतर्गत टारगेट की पुष्टि तथा 2 ग्राम गोल्ड की पात्रता"
+                />
+              </Field>
+              <Field label="स्कीम का नाम (Scheme Name)" required>
+                <Input
+                  value={form.contract_period}
+                  onChange={(e) => update("contract_period", e.target.value)}
+                  placeholder="डीलर गोल्ड स्कीम 2026-27"
+                />
+              </Field>
+              <Field label="जमा राशि (Deposit Amount)" required>
+                <Input
+                  value={form.salary}
+                  onChange={(e) => update("salary", e.target.value)}
+                  placeholder="₹ 1,00,000 (एक लाख रूपये मात्र)"
+                />
+              </Field>
+              <Field label="गोल्ड / रिवॉर्ड पात्रता (Reward)" required>
+                <Input
+                  value={form.hq}
+                  onChange={(e) => update("hq", e.target.value)}
+                  placeholder="२ ग्राम गोल्ड स्कीम"
+                />
+              </Field>
+              <Field label="कंपनी का नाम (Company Name)" required>
+                <Input
+                  value={form.company_name || ""}
+                  onChange={(e) => update("company_name", e.target.value)}
+                  placeholder="VANIKI CROP SCIENCE PVT. LTD."
+                />
+              </Field>
+              <Field label="हस्ताक्षरकर्ता पद (Signatory Title)" className="md:col-span-2">
+                <Input
+                  value={form.jurisdiction}
+                  onChange={(e) => update("jurisdiction", e.target.value)}
+                  placeholder="अधिकृत हस्ताक्षरकर्ता"
+                />
+              </Field>
+            </CardContent>
+          </Card>
+
+          {/* Products Target Table Card */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle className="text-base">3. Target Achievement Details (उत्पाद एवं टारगेट विवरण)</CardTitle>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  यह तालिका पत्र में 'Target Achievement Details' के रूप में प्रिंट होगी।
+                </p>
+              </div>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  const current = parseSchemeProducts(form.sales_target);
+                  const nextId = (current.length + 1).toString();
+                  const updated = [...current, { id: nextId, name: "", target: "", status: "Achieved" }];
+                  update("sales_target", JSON.stringify(updated));
+                }}
+              >
+                <Plus className="mr-1 h-4 w-4" /> Add Product Row
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="grid grid-cols-12 gap-2 text-xs font-bold text-neutral-600 px-2">
+                <div className="col-span-1">क्र.</div>
+                <div className="col-span-5">उत्पाद का नाम (Product Name)</div>
+                <div className="col-span-3">निर्धारित टारगेट (Target)</div>
+                <div className="col-span-2">स्थिति (Status)</div>
+                <div className="col-span-1 text-right">हटाएं</div>
+              </div>
+              {parseSchemeProducts(form.sales_target).map((p, idx) => (
+                <div key={p.id || idx} className="grid grid-cols-12 gap-2 items-center rounded-md border p-2 bg-muted/20">
+                  <div className="col-span-1 font-bold text-center text-sm">{idx + 1}</div>
+                  <div className="col-span-5">
+                    <Input
+                      placeholder="e.g. HULK"
+                      value={p.name}
+                      onChange={(e) => {
+                        const current = parseSchemeProducts(form.sales_target);
+                        current[idx].name = e.target.value;
+                        update("sales_target", JSON.stringify(current));
+                      }}
+                    />
+                  </div>
+                  <div className="col-span-3">
+                    <Input
+                      placeholder="e.g. 100 LTR"
+                      value={p.target}
+                      onChange={(e) => {
+                        const current = parseSchemeProducts(form.sales_target);
+                        current[idx].target = e.target.value;
+                        update("sales_target", JSON.stringify(current));
+                      }}
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <Input
+                      placeholder="Achieved"
+                      value={p.status}
+                      onChange={(e) => {
+                        const current = parseSchemeProducts(form.sales_target);
+                        current[idx].status = e.target.value;
+                        update("sales_target", JSON.stringify(current));
+                      }}
+                    />
+                  </div>
+                  <div className="col-span-1 text-right">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        const current = parseSchemeProducts(form.sales_target);
+                        const filtered = current.filter((_, i) => i !== idx);
+                        update("sales_target", JSON.stringify(filtered));
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* Body Text Card */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-base">4. पत्र का मुख्य विवरण एवं संदेश (Letter Body Text)</CardTitle>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const company = form.company_name || "VANIKI CROP SCIENCE PVT. LTD.";
+                  const scheme = form.contract_period || "डीलर गोल्ड स्कीम 2026-27";
+                  const amount = form.salary || "₹ 1,00,000 (एक लाख रूपये मात्र)";
+                  const reward = form.hq || "२ ग्राम गोल्ड स्कीम";
+                  update(
+                    "incentive_rules",
+                    `महोदय,\nहमे यह बताते हुए हर्ष हो रहा है की **${company}** द्वारा संचालित **${scheme}** के अंतर्गत कंपनी में आपका **${amount}** की राशि सफलतापूर्वक जमा कर दी गई है।\nइसके साथ ही, आपने निर्धारित खरीद टारगेट भी सफलतापूर्वक प्राप्त कर लिया है। आपकी इस उपलब्धि के लिए हम आपको हार्दिक बधाई देते है।\n\n---TABLE---\n\n**Congratulations**\n\nआपको यह सूचित करते हुए प्रसन्नता हो रही है की आपने निर्धारित खरीद टारगेट पूरा कर लिया है तथा जमा राशि की शर्त भी सफलतापूर्वक पूरी कर ली है। अतः आप कंपनी की **${reward}** के अंतर्गत लाभ प्राप्त करने के लिए पात्र है।\n\nहम आपके विश्वास, सहयोग एवं कंपनी के उत्पादों के प्रति आपके योगदान की सराहना करते है। भविष्य में भी आपके साथ हमारे व्यवसायिक संबंध और अधिक मजबूत एवं सफल बने रहे, यही हमारी कामना है।\n\nहार्दिक शुभकामनाएँ सहित,`
+                  );
+                  toast.success("Updated Hindi text template!");
+                }}
+              >
+                <RefreshCw className="mr-1.5 h-3.5 w-3.5" /> Auto-Fill Body
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                rows={9}
+                value={form.incentive_rules}
+                onChange={(e) => update("incentive_rules", e.target.value)}
+                placeholder="Enter Hindi body text..."
+                className="text-sm leading-relaxed font-sans"
+              />
+              <p className="mt-2 text-xs text-muted-foreground">
+                💡 पत्र में जिस स्थान पर <strong>---TABLE---</strong> लिखा होगा, वहाँ ऊपर दी गई उत्पाद तालिका स्वतः प्रिंट होगी। बोल्ड करने हेतु <strong>**शब्द**</strong> का प्रयोग करें।
+              </p>
+            </CardContent>
+          </Card>
+        </div>
       ) : (
         <>
           {/* Primary fields */}

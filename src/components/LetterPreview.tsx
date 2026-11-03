@@ -11,6 +11,20 @@ function formatDate(iso: string): string {
   return `${d}.${m}.${y}`;
 }
 
+function formatDateDash(iso: string): string {
+  if (!iso) return "";
+  const [y, m, d] = iso.split("-");
+  if (!y || !m || !d) return iso;
+  return `${d}-${m}-${y}`;
+}
+
+function formatDateSlash(iso: string): string {
+  if (!iso) return "";
+  const [y, m, d] = iso.split("-");
+  if (!y || !m || !d) return iso;
+  return `${d}/${m}/${y}`;
+}
+
 function renderFormattedText(text: string): React.ReactNode {
   if (!text) return "";
   
@@ -198,6 +212,376 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
 
           {/* Page Number Spacer */}
           <div className="h-[20mm] w-full flex-shrink-0 z-10 relative" />
+        </section>
+      </article>
+    );
+  }
+
+  if (data.role === "lifting_discount") {
+    const paragraphs = (data.incentive_rules || "")
+      .split("\n\n")
+      .map((p) => p.trim())
+      .filter(Boolean);
+
+    return (
+      <article className="flex flex-col items-center gap-8 bg-muted/20 py-8 no-print-bg">
+        <style>{`
+          @media screen {
+            .no-print-bg {
+              background-color: var(--color-muted);
+            }
+          }
+          @page {
+            size: A4 portrait;
+            margin: 0mm;
+          }
+          @media print {
+            * {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+              color-adjust: exact !important;
+            }
+            html, body {
+              width: 210mm !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              background: white !important;
+            }
+            .no-print-bg {
+              background: white !important;
+              padding: 0 !important;
+              gap: 0 !important;
+              display: block !important;
+            }
+            .print-page {
+              position: relative !important;
+              box-shadow: none !important;
+              border: none !important;
+              margin: 0 !important;
+              width: 210mm !important;
+              height: 297mm !important;
+              overflow: hidden !important;
+              page-break-after: always !important;
+              break-after: page !important;
+              display: flex !important;
+              flex-direction: column !important;
+            }
+            .print-page:last-child {
+              page-break-after: avoid !important;
+              break-after: avoid !important;
+            }
+            .no-print {
+              display: none !important;
+            }
+          }
+        `}</style>
+
+        {/* Print settings toolbar */}
+        <div className="mb-2 flex flex-wrap gap-4 items-center justify-between p-4 bg-white rounded-lg border border-neutral-200 shadow-sm no-print w-[210mm] max-w-full">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-bold text-neutral-700">🖨️ Printing Configuration</span>
+          </div>
+          <div className="flex flex-wrap gap-4">
+            <label className="flex items-center gap-2 text-xs font-semibold text-neutral-600 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={usePrePrintedHeader}
+                onChange={(e) => setUsePrePrintedHeader(e.target.checked)}
+                className="rounded border-neutral-300 text-brand focus:ring-brand h-4 w-4"
+              />
+              Printing on Physical Letter Pad (hides digital letterhead image when printing)
+            </label>
+          </div>
+          <button
+            onClick={() => window.print()}
+            className="bg-brand hover:bg-brand/90 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-sm transition flex items-center gap-1.5"
+          >
+            Print Now
+          </button>
+        </div>
+
+        {/* Lifting Discount Page */}
+        <section className="print-page relative w-[210mm] min-h-[297mm] bg-white flex flex-col justify-between shadow-lg border border-neutral-200 print:shadow-none print:border-none print:m-0 print:w-full print:min-h-0" style={{padding: 0}}>
+          {/* Letterpad Background Image */}
+          <img
+            src={letterpadBg}
+            alt="Letterpad Background"
+            className={`absolute inset-0 w-full h-full object-fill z-0 pointer-events-none${usePrePrintedHeader ? " print:hidden" : ""}`}
+          />
+
+          {/* Spacer to push body below letterhead */}
+          <div style={{height: '70mm'}} className="w-full flex-shrink-0 z-10 relative" />
+
+          {/* Body */}
+          <div className="flex-grow z-10 relative px-[22mm] pb-[16mm] pt-[6mm] flex flex-col justify-between">
+            <div>
+              {/* Date on Right */}
+              <div className="text-right text-[14px] font-semibold text-neutral-800 mb-2">
+                Date: {formatDateDash(data.letter_date)}
+              </div>
+
+              {/* Recipient */}
+              <div className="text-[14px] text-neutral-900 leading-snug mb-5 space-y-0.5">
+                <p className="font-bold">To,</p>
+                <p className="font-bold text-[15px]">{data.employee_name || "Mr Manoj Pathak"}</p>
+                <p className="font-bold">{data.village || "Shiv Shakti Krishi Kendra"}</p>
+                <p>{data.district || "Manpur Chowk, Khamhartola, Balod (C.G.)"}</p>
+                {data.phone && <p>Contact no. - {data.phone}</p>}
+                {data.email && <p>GSTIN - {data.email}</p>}
+              </div>
+
+              {/* Subject */}
+              <div className="text-[14px] font-bold text-neutral-900 mb-4">
+                Subject: {data.post}
+              </div>
+
+              {/* Salutation */}
+              <div className="text-[14px] text-neutral-900 mb-3">
+                Dear Sir,
+              </div>
+
+              {/* Body Paragraphs */}
+              <div className="space-y-3.5 text-[14px] leading-[1.8] text-neutral-800 text-justify">
+                {paragraphs.map((p, idx) => (
+                  <p key={idx}>{renderFormattedText(p)}</p>
+                ))}
+              </div>
+            </div>
+
+            {/* Footer Signatures */}
+            <div className="mt-8 flex justify-between items-end text-[13.5px]">
+              {/* Left Signatory */}
+              <div className="space-y-1">
+                <p className="text-neutral-900">Yours sincerely,</p>
+                <p className="font-bold text-neutral-900">{data.company_name || "Vaniki Crop Science Pvt. Ltd."}</p>
+                <div className="h-16 flex items-center">
+                  <span className="text-xs text-neutral-400 italic font-mono">[Signature]</span>
+                </div>
+                <p className="text-neutral-800"><span className="font-medium">Name:</span> {data.joining_deadline || "Sajal Kumar Tamrakar"}</p>
+                <p className="text-neutral-800"><span className="font-medium">Designation:</span> {data.jurisdiction || "Manager, Vaniki Crop Science Pvt Ltd"}</p>
+              </div>
+
+              {/* Right Acknowledgment Box */}
+              <div className="border border-indigo-900/60 rounded px-6 py-3 text-center min-w-[210px] space-y-1 shadow-sm bg-white/70">
+                <p className="font-bold text-[12px] uppercase text-indigo-950 tracking-wider">
+                  {data.village || "SHIV SHAKTI KRISHI KENDRA"}
+                </p>
+                <div className="h-12 flex items-center justify-center">
+                  <span className="text-xs text-neutral-400 italic font-mono">[Stamp / Signature]</span>
+                </div>
+                <p className="text-[12px] font-semibold text-neutral-700">Proprietor</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Margin Spacer */}
+          <div className="h-[15mm] w-full flex-shrink-0 z-10 relative" />
+        </section>
+      </article>
+    );
+  }
+
+  if (data.role === "dealer_scheme") {
+    let products: { id: string; name: string; target: string; status: string }[] = [];
+    try {
+      if (data.sales_target) {
+        products = JSON.parse(data.sales_target);
+      }
+    } catch (e) {}
+    if (!products || products.length === 0) {
+      products = [
+        { id: "1", name: "HULK", target: "100 LTR", status: "Achieved" },
+        { id: "2", name: "RUBICON", target: "50 LTR", status: "Achieved" },
+      ];
+    }
+
+    const fullText = data.incentive_rules || "";
+    let part1 = fullText;
+    let part2 = "";
+    if (fullText.includes("---TABLE---")) {
+      const parts = fullText.split("---TABLE---");
+      part1 = parts[0];
+      part2 = parts[1];
+    }
+
+    const paragraphs1 = part1.split("\n\n").map((p) => p.trim()).filter(Boolean);
+    const paragraphs2 = part2.split("\n\n").map((p) => p.trim()).filter(Boolean);
+
+    return (
+      <article className="flex flex-col items-center gap-8 bg-muted/20 py-8 no-print-bg">
+        <style>{`
+          @media screen {
+            .no-print-bg {
+              background-color: var(--color-muted);
+            }
+          }
+          @page {
+            size: A4 portrait;
+            margin: 0mm;
+          }
+          @media print {
+            * {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+              color-adjust: exact !important;
+            }
+            html, body {
+              width: 210mm !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              background: white !important;
+            }
+            .no-print-bg {
+              background: white !important;
+              padding: 0 !important;
+              gap: 0 !important;
+              display: block !important;
+            }
+            .print-page {
+              position: relative !important;
+              box-shadow: none !important;
+              border: none !important;
+              margin: 0 !important;
+              width: 210mm !important;
+              height: 297mm !important;
+              overflow: hidden !important;
+              page-break-after: always !important;
+              break-after: page !important;
+              display: flex !important;
+              flex-direction: column !important;
+            }
+            .print-page:last-child {
+              page-break-after: avoid !important;
+              break-after: avoid !important;
+            }
+            .no-print {
+              display: none !important;
+            }
+          }
+        `}</style>
+
+        {/* Print settings toolbar */}
+        <div className="mb-2 flex flex-wrap gap-4 items-center justify-between p-4 bg-white rounded-lg border border-neutral-200 shadow-sm no-print w-[210mm] max-w-full">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-bold text-neutral-700">🖨️ Printing Configuration</span>
+          </div>
+          <div className="flex flex-wrap gap-4">
+            <label className="flex items-center gap-2 text-xs font-semibold text-neutral-600 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={usePrePrintedHeader}
+                onChange={(e) => setUsePrePrintedHeader(e.target.checked)}
+                className="rounded border-neutral-300 text-brand focus:ring-brand h-4 w-4"
+              />
+              Printing on Physical Letter Pad (hides digital letterhead image when printing)
+            </label>
+          </div>
+          <button
+            onClick={() => window.print()}
+            className="bg-brand hover:bg-brand/90 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-sm transition flex items-center gap-1.5"
+          >
+            Print Now
+          </button>
+        </div>
+
+        {/* Dealer Gold Scheme Page */}
+        <section className="print-page relative w-[210mm] min-h-[297mm] bg-white flex flex-col justify-between shadow-lg border border-neutral-200 print:shadow-none print:border-none print:m-0 print:w-full print:min-h-0" style={{padding: 0}}>
+          {/* Letterpad Background Image */}
+          <img
+            src={letterpadBg}
+            alt="Letterpad Background"
+            className={`absolute inset-0 w-full h-full object-fill z-0 pointer-events-none${usePrePrintedHeader ? " print:hidden" : ""}`}
+          />
+
+          {/* Spacer to push body below letterhead */}
+          <div style={{height: '70mm'}} className="w-full flex-shrink-0 z-10 relative" />
+
+          {/* Body */}
+          <div className="flex-grow z-10 relative px-[22mm] pb-[16mm] pt-[4mm] flex flex-col justify-between">
+            <div>
+              {/* Date on Right */}
+              <div className="text-right text-[13.5px] font-bold text-neutral-800 mb-3 tracking-wide">
+                DATE - {formatDateSlash(data.letter_date)}
+              </div>
+
+              {/* Recipient */}
+              <div className="text-[13.5px] text-neutral-900 leading-snug mb-3 space-y-0.5">
+                <p className="font-bold">प्रति,</p>
+                <p className="font-bold">डीलर का नाम : {data.employee_name || "शिव शक्ति कृषि केंद्र,"}</p>
+                <p>स्थान - {data.village || "दल्लीराजहरा, (छ.ग.)"}</p>
+              </div>
+
+              {/* Subject */}
+              <div className="text-[13.5px] font-bold text-neutral-900 mb-3 leading-snug">
+                विषय - {data.post}
+              </div>
+
+              {/* Part 1 Paragraphs */}
+              <div className="space-y-2.5 text-[13px] leading-[1.75] text-neutral-800 text-justify mb-4">
+                {paragraphs1.map((p, idx) => (
+                  <p key={idx}>{renderFormattedText(p)}</p>
+                ))}
+              </div>
+
+              {/* Target Achievement Details Table */}
+              <div className="my-4">
+                <h4 className="font-bold text-[13px] text-neutral-900 mb-2">
+                  Target Achievement Details
+                </h4>
+                <table className="w-full max-w-[500px] border-collapse text-[12.5px] border border-neutral-400">
+                  <thead>
+                    <tr className="bg-neutral-100/75 border-b border-neutral-400 font-bold text-neutral-900">
+                      <th className="border-r border-neutral-400 px-3 py-1 text-center w-12">क्र</th>
+                      <th className="border-r border-neutral-400 px-3 py-1 text-left">उत्पाद का नाम</th>
+                      <th className="border-r border-neutral-400 px-3 py-1 text-center">निर्धारित टारगेट</th>
+                      <th className="px-3 py-1 text-center">स्थिति</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {products.map((prod, idx) => (
+                      <tr key={prod.id || idx} className="border-b border-neutral-300">
+                        <td className="border-r border-neutral-300 px-3 py-1 text-center font-medium">{idx + 1}</td>
+                        <td className="border-r border-neutral-300 px-3 py-1 text-left font-bold uppercase">{prod.name}</td>
+                        <td className="border-r border-neutral-300 px-3 py-1 text-center">{prod.target}</td>
+                        <td className="px-3 py-1 text-center font-semibold text-emerald-700">{prod.status}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Part 2 Paragraphs */}
+              <div className="space-y-2.5 text-[13px] leading-[1.75] text-neutral-800 text-justify mt-3">
+                {paragraphs2.map((p, idx) => {
+                  if (p.toLowerCase().includes("congratulations")) {
+                    return (
+                      <div key={idx} className="font-serif italic font-bold text-[16px] text-neutral-900 my-2">
+                        {renderFormattedText(p)}
+                      </div>
+                    );
+                  }
+                  return <p key={idx}>{renderFormattedText(p)}</p>;
+                })}
+              </div>
+            </div>
+
+            {/* Footer Signatory */}
+            <div className="mt-6 space-y-1 text-[13px]">
+              <p className="font-bold text-neutral-900 uppercase">
+                {data.company_name || "VANIKI CROP SCIENCE PVT. LTD."}
+              </p>
+              <div className="h-16 flex items-center">
+                <span className="text-xs text-neutral-400 italic font-mono">[अधिकृत हस्ताक्षर]</span>
+              </div>
+              <p className="font-bold text-neutral-900">{data.jurisdiction || "अधिकृत हस्ताक्षरकर्ता"}</p>
+              <p className="font-bold text-neutral-900 uppercase text-[12px]">
+                {data.company_name || "VANIKI CROP SCIENCE PVT LTD"}
+              </p>
+            </div>
+          </div>
+
+          {/* Bottom Margin Spacer */}
+          <div className="h-[15mm] w-full flex-shrink-0 z-10 relative" />
         </section>
       </article>
     );

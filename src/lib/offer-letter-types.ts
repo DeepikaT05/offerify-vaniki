@@ -1,4 +1,4 @@
-export type Role = "developer" | "sales" | "manager" | "hr" | "field_assistant" | "other" | "stockiest";
+export type Role = "developer" | "sales" | "manager" | "hr" | "field_assistant" | "other" | "stockiest" | "lifting_discount" | "dealer_scheme";
 
 export interface CustomBlock {
   id: string;
@@ -54,6 +54,8 @@ export const ROLE_LABELS: Record<Role, string> = {
   field_assistant: "Field Assistant",
   other: "Other (Custom)",
   stockiest: "Stockiest Certificate",
+  lifting_discount: "Lifting Discount Offer",
+  dealer_scheme: "Dealer Gold Scheme",
 };
 
 export const ROLE_DEFAULTS: Record<Role, Partial<OfferLetterFormState>> = {
@@ -138,6 +140,64 @@ Incentive Pay on Year End.`,
     annual_increment: "",
     joining_deadline: "",
     jurisdiction: "",
+  },
+  lifting_discount: {
+    letter_no: "LD-01",
+    employee_name: "Mr Manoj Pathak",
+    village: "Shiv Shakti Krishi Kendra",
+    district: "Manpur Chowk, Khamhartola, Balod (C.G.)",
+    phone: "9617932488",
+    email: "22AXDPP6919K1Z7",
+    post: "Special Lifting Discount of ₹200 Per Litre on Hulk",
+    hq: "Hulk",
+    salary: "₹200 (Rupees Two Hundred Only) per litre",
+    contract_period: "100 litres",
+    joining_deadline: "Sajal Kumar Tamrakar",
+    jurisdiction: "Manager, Vaniki Crop Science Pvt Ltd",
+    company_name: "Vaniki Crop Science Pvt. Ltd.",
+    company_gstin: "22AAJCV1916A1ZV",
+    company_phone: "9302228883",
+    company_corporate_add: "Shop No.34, Krishi Upaj Mandi Dhamdha Road, Durg 491001 (C.G.)",
+    company_shop_add: "Bazar Chowk Bori, Dist-Durg 491001 (C.G.)",
+    incentive_rules: `We are pleased to offer you a special lifting discount of **₹200 (Rupees Two Hundred Only)** per litre on **Hulk**, subject to a minimum purchase quantity of **100 litres**.
+
+We value your association with our company and look forward to strengthening our business relationship in the future.
+
+We request you to kindly take advantage of this special offer.
+
+Thank you for your continued trust and support.`,
+  },
+  dealer_scheme: {
+    letter_no: "DS-01",
+    employee_name: "शिव शक्ति कृषि केंद्र",
+    village: "दल्लीराजहरा, (छ.ग.)",
+    post: "डीलर गोल्ड स्कीम 2026-2027 के अंतर्गत टारगेट की पुष्टि तथा 2 ग्राम गोल्ड की पात्रता",
+    salary: "₹ 1,00,000 (एक लाख रूपये मात्र)",
+    hq: "२ ग्राम गोल्ड",
+    contract_period: "डीलर गोल्ड स्कीम 2026-27",
+    sales_target: JSON.stringify([
+      { id: "1", name: "HULK", target: "100 LTR", status: "Achieved" },
+      { id: "2", name: "RUBICON", target: "50 LTR", status: "Achieved" },
+    ]),
+    jurisdiction: "अधिकृत हस्ताक्षरकर्ता",
+    company_name: "VANIKI CROP SCIENCE PVT. LTD.",
+    company_gstin: "22AAJCV1916A1ZV",
+    company_phone: "9302228883",
+    company_corporate_add: "Shop No.34, Krishi Upaj Mandi Dhamdha Road, Durg 491001 (C.G.)",
+    company_shop_add: "Bazar Chowk Bori, Dist-Durg 491001 (C.G.)",
+    incentive_rules: `महोदय,
+हमे यह बताते हुए हर्ष हो रहा है की **VANIKI CROP SCIENCE PVT. LTD.** द्वारा संचालित **डीलर गोल्ड स्कीम 2026-27** के अंतर्गत कंपनी में आपका **₹ 1,00,000 (एक लाख रूपये मात्र)** की राशि सफलतापूर्वक जमा कर दी गई है।
+इसके साथ ही, आपने निर्धारित खरीद टारगेट भी सफलतापूर्वक प्राप्त कर लिया है। आपकी इस उपलब्धि के लिए हम आपको हार्दिक बधाई देते है।
+
+---TABLE---
+
+**Congratulations**
+
+आपको यह सूचित करते हुए प्रसन्नता हो रही है की आपने निर्धारित खरीद टारगेट पूरा कर लिया है तथा जमा राशि की शर्त भी सफलतापूर्वक पूरी कर ली है। अतः आप कंपनी की **२ ग्राम गोल्ड स्कीम** के अंतर्गत लाभ प्राप्त करने के लिए पात्र है।
+
+हम आपके विश्वास, सहयोग एवं कंपनी के उत्पादों के प्रति आपके योगदान की सराहना करते है। भविष्य में भी आपके साथ हमारे व्यवसायिक संबंध और अधिक मजबूत एवं सफल बने रहे, यही हमारी कामना है।
+
+हार्दिक शुभकामनाएँ सहित,`,
   },
 };
 
