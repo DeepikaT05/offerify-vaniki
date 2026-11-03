@@ -27,18 +27,20 @@ function formatDateSlash(iso: string): string {
 
 function renderFormattedText(text: string): React.ReactNode {
   if (!text) return "";
-  
+
   // Normalize HTML bold tags to **
-  const normalized = text
-    .replace(/<\/?b>/gi, "**")
-    .replace(/<\/?strong>/gi, "**");
-    
+  const normalized = text.replace(/<\/?b>/gi, "**").replace(/<\/?strong>/gi, "**");
+
   // Split by **
   const parts = normalized.split(/\*\*([^*]+)\*\*/g);
-  
+
   return parts.map((part, index) => {
     if (index % 2 === 1) {
-      return <strong key={index} className="font-bold text-neutral-900">{part}</strong>;
+      return (
+        <strong key={index} className="font-bold text-neutral-900">
+          {part}
+        </strong>
+      );
     }
     return part;
   });
@@ -51,9 +53,7 @@ function renderSchemeText(text: string): React.ReactNode {
   let formatted = text.replace(/२/g, "2");
 
   // Normalize HTML bold tags to **
-  formatted = formatted
-    .replace(/<\/?b>/gi, "**")
-    .replace(/<\/?strong>/gi, "**");
+  formatted = formatted.replace(/<\/?b>/gi, "**").replace(/<\/?strong>/gi, "**");
 
   const bluePhrases = [
     "VANIKI CROP SCIENCE PVT. LTD.",
@@ -108,17 +108,21 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
       if (parsed.company_phone) company_phone = parsed.company_phone;
       if (parsed.company_corporate_add) company_corporate_add = parsed.company_corporate_add;
       if (parsed.company_shop_add) company_shop_add = parsed.company_shop_add;
-    } catch (e) {}
+    } catch (_e) {
+      // ignore parse error
+    }
   }
 
   const getClause = (id: string): string => {
-    const override = data.custom_blocks.find((b) => b.id === id && b.heading === "__clause_override__");
+    const override = data.custom_blocks.find(
+      (b) => b.id === id && b.heading === "__clause_override__",
+    );
     return override ? override.content : getDefaultClauseText(id, data);
   };
 
   // Filter out system override blocks from general custom blocks output
   const userCustomBlocks = data.custom_blocks.filter(
-    (b) => b.heading !== "__clause_override__" && b.heading !== "__company_details__"
+    (b) => b.heading !== "__clause_override__" && b.heading !== "__company_details__",
   );
 
   if (data.role === "stockiest") {
@@ -200,7 +204,10 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
         </div>
 
         {/* Certificate Page */}
-        <section className="print-page relative w-[210mm] min-h-[297mm] bg-white flex flex-col justify-between shadow-lg border border-neutral-200 print:shadow-none print:border-none print:m-0 print:w-full print:min-h-0" style={{padding: 0}}>
+        <section
+          className="print-page relative w-[210mm] min-h-[297mm] bg-white flex flex-col justify-between shadow-lg border border-neutral-200 print:shadow-none print:border-none print:m-0 print:w-full print:min-h-0"
+          style={{ padding: 0 }}
+        >
           {/* Letterpad Background Image */}
           <img
             src={letterpadBg}
@@ -209,7 +216,7 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
           />
 
           {/* Spacer to push body below letterhead */}
-          <div style={{height: '70mm'}} className="w-full flex-shrink-0 z-10 relative" />
+          <div style={{ height: "70mm" }} className="w-full flex-shrink-0 z-10 relative" />
 
           {/* Body */}
           <div className="flex-grow z-10 relative px-[22mm] pb-[20mm] pt-[10mm] flex flex-col justify-between">
@@ -231,7 +238,10 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
               <div className="flex justify-between items-start text-[14px]">
                 <div className="space-y-4">
                   <p className="text-neutral-800">
-                    Place: <span className="font-bold underline uppercase">{data.village || "Raipur"}</span>
+                    Place:{" "}
+                    <span className="font-bold underline uppercase">
+                      {data.village || "Raipur"}
+                    </span>
                   </p>
                   <p className="text-neutral-800">
                     Date : <span className="font-bold">{formatDate(data.letter_date)}</span>
@@ -241,7 +251,7 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
                   <p className="text-neutral-800 font-bold">
                     For,{data.company_name || "Vaniki Crop Science Private Limited"}
                   </p>
-                  
+
                   {/* Spacer for physical signature/stamp */}
                   <div className="h-24"></div>
 
@@ -342,7 +352,10 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
         </div>
 
         {/* Lifting Discount Page */}
-        <section className="print-page relative w-[210mm] min-h-[297mm] bg-white flex flex-col justify-between shadow-lg border border-neutral-200 print:shadow-none print:border-none print:m-0 print:w-full print:min-h-0" style={{padding: 0}}>
+        <section
+          className="print-page relative w-[210mm] min-h-[297mm] bg-white flex flex-col justify-between shadow-lg border border-neutral-200 print:shadow-none print:border-none print:m-0 print:w-full print:min-h-0"
+          style={{ padding: 0 }}
+        >
           {/* Letterpad Background Image */}
           <img
             src={letterpadBg}
@@ -351,7 +364,7 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
           />
 
           {/* Spacer to push body below letterhead */}
-          <div style={{height: '70mm'}} className="w-full flex-shrink-0 z-10 relative" />
+          <div style={{ height: "70mm" }} className="w-full flex-shrink-0 z-10 relative" />
 
           {/* Body */}
           <div className="flex-grow z-10 relative px-[22mm] pb-[16mm] pt-[6mm] flex flex-col justify-between">
@@ -372,9 +385,7 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
               </div>
 
               {/* Salutation */}
-              <div className="text-[14px] text-neutral-900 mb-3">
-                Dear Sir,
-              </div>
+              <div className="text-[14px] text-neutral-900 mb-3">Dear Sir,</div>
 
               {/* Body Paragraphs */}
               <div className="space-y-3.5 text-[14px] leading-[1.8] text-neutral-800 text-justify">
@@ -389,10 +400,18 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
               {/* Left Signatory */}
               <div className="space-y-1">
                 <p className="text-neutral-900">Yours sincerely,</p>
-                <p className="font-bold text-neutral-900">{data.company_name || "Vaniki Crop Science Pvt. Ltd."}</p>
+                <p className="font-bold text-neutral-900">
+                  {data.company_name || "Vaniki Crop Science Pvt. Ltd."}
+                </p>
                 <div className="h-16"></div>
-                <p className="text-neutral-800"><span className="font-medium">Name:</span> {data.joining_deadline || "Sajal Kumar Tamrakar"}</p>
-                <p className="text-neutral-800"><span className="font-medium">Designation:</span> {data.jurisdiction || "Manager, Vaniki Crop Science Pvt Ltd"}</p>
+                <p className="text-neutral-800">
+                  <span className="font-medium">Name:</span>{" "}
+                  {data.joining_deadline || "Sajal Kumar Tamrakar"}
+                </p>
+                <p className="text-neutral-800">
+                  <span className="font-medium">Designation:</span>{" "}
+                  {data.jurisdiction || "Manager, Vaniki Crop Science Pvt Ltd"}
+                </p>
               </div>
             </div>
           </div>
@@ -410,7 +429,9 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
       if (data.sales_target) {
         products = JSON.parse(data.sales_target);
       }
-    } catch (e) {}
+    } catch (_e) {
+      // ignore parse error
+    }
     if (!products || products.length === 0) {
       products = [
         { id: "1", name: "HULK", target: "100 LTR", status: "Achieved" },
@@ -427,8 +448,14 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
       part2 = parts[1];
     }
 
-    const paragraphs1 = part1.split("\n\n").map((p) => p.trim()).filter(Boolean);
-    const paragraphs2 = part2.split("\n\n").map((p) => p.trim()).filter(Boolean);
+    const paragraphs1 = part1
+      .split("\n\n")
+      .map((p) => p.trim())
+      .filter(Boolean);
+    const paragraphs2 = part2
+      .split("\n\n")
+      .map((p) => p.trim())
+      .filter(Boolean);
 
     return (
       <article className="flex flex-col items-center gap-8 bg-muted/20 py-8 no-print-bg">
@@ -508,7 +535,10 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
         </div>
 
         {/* Dealer Gold Scheme Page */}
-        <section className="print-page relative w-[210mm] min-h-[297mm] bg-white flex flex-col justify-between shadow-lg border border-neutral-200 print:shadow-none print:border-none print:m-0 print:w-full print:min-h-0" style={{padding: 0}}>
+        <section
+          className="print-page relative w-[210mm] min-h-[297mm] bg-white flex flex-col justify-between shadow-lg border border-neutral-200 print:shadow-none print:border-none print:m-0 print:w-full print:min-h-0"
+          style={{ padding: 0 }}
+        >
           {/* Letterpad Background Image */}
           <img
             src={letterpadBg}
@@ -517,7 +547,7 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
           />
 
           {/* Spacer to push body below letterhead */}
-          <div style={{height: '70mm'}} className="w-full flex-shrink-0 z-10 relative" />
+          <div style={{ height: "70mm" }} className="w-full flex-shrink-0 z-10 relative" />
 
           {/* Body */}
           <div className="flex-grow z-10 relative px-[22mm] pb-[16mm] pt-[4mm] flex flex-col justify-between">
@@ -525,7 +555,9 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
               {/* Recipient */}
               <div className="text-[13.5px] text-neutral-900 leading-snug mb-3 space-y-0.5">
                 <p className="font-bold">प्रति,</p>
-                <p className="font-bold">डीलर का नाम : {data.employee_name || "शिव शक्ति कृषि केंद्र,"}</p>
+                <p className="font-bold">
+                  डीलर का नाम : {data.employee_name || "शिव शक्ति कृषि केंद्र,"}
+                </p>
                 <p>स्थान - {data.village || "दल्लीराजहरा, (छ.ग.)"}</p>
               </div>
 
@@ -549,19 +581,33 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
                 <table className="w-full max-w-[500px] border-collapse text-[12.5px] border-2 border-blue-900">
                   <thead>
                     <tr className="bg-blue-100/70 border-b-2 border-blue-900 font-bold text-blue-900">
-                      <th className="border-r border-blue-900 px-3 py-1.5 text-center w-12 text-blue-900">क्र</th>
-                      <th className="border-r border-blue-900 px-3 py-1.5 text-left text-blue-900">उत्पाद का नाम</th>
-                      <th className="border-r border-blue-900 px-3 py-1.5 text-center text-blue-900">निर्धारित टारगेट</th>
+                      <th className="border-r border-blue-900 px-3 py-1.5 text-center w-12 text-blue-900">
+                        क्र
+                      </th>
+                      <th className="border-r border-blue-900 px-3 py-1.5 text-left text-blue-900">
+                        उत्पाद का नाम
+                      </th>
+                      <th className="border-r border-blue-900 px-3 py-1.5 text-center text-blue-900">
+                        निर्धारित टारगेट
+                      </th>
                       <th className="px-3 py-1.5 text-center text-blue-900">स्थिति</th>
                     </tr>
                   </thead>
                   <tbody>
                     {products.map((prod, idx) => (
                       <tr key={prod.id || idx} className="border-b border-blue-800/40">
-                        <td className="border-r border-blue-800/40 px-3 py-1.5 text-center font-bold text-blue-900">{idx + 1}</td>
-                        <td className="border-r border-blue-800/40 px-3 py-1.5 text-left font-bold uppercase text-blue-900">{prod.name}</td>
-                        <td className="border-r border-blue-800/40 px-3 py-1.5 text-center font-bold text-blue-900">{prod.target}</td>
-                        <td className="px-3 py-1.5 text-center font-bold text-blue-900">{prod.status}</td>
+                        <td className="border-r border-blue-800/40 px-3 py-1.5 text-center font-bold text-blue-900">
+                          {idx + 1}
+                        </td>
+                        <td className="border-r border-blue-800/40 px-3 py-1.5 text-left font-bold uppercase text-blue-900">
+                          {prod.name}
+                        </td>
+                        <td className="border-r border-blue-800/40 px-3 py-1.5 text-center font-bold text-blue-900">
+                          {prod.target}
+                        </td>
+                        <td className="px-3 py-1.5 text-center font-bold text-blue-900">
+                          {prod.status}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -573,7 +619,10 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
                 {paragraphs2.map((p, idx) => {
                   if (p.toLowerCase().includes("congratulations")) {
                     return (
-                      <div key={idx} className="font-serif italic font-bold text-[17px] text-blue-900 my-2.5 tracking-wide">
+                      <div
+                        key={idx}
+                        className="font-serif italic font-bold text-[17px] text-blue-900 my-2.5 tracking-wide"
+                      >
                         Congratulations
                       </div>
                     );
@@ -589,7 +638,9 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
                 {data.company_name || "VANIKI CROP SCIENCE PVT. LTD."}
               </p>
               <div className="h-16"></div>
-              <p className="font-bold text-neutral-900">{data.jurisdiction || "अधिकृत हस्ताक्षरकर्ता"}</p>
+              <p className="font-bold text-neutral-900">
+                {data.jurisdiction || "अधिकृत हस्ताक्षरकर्ता"}
+              </p>
               <p className="font-bold text-blue-900 uppercase text-[12px]">
                 {data.company_name || "VANIKI CROP SCIENCE PVT LTD"}
               </p>
@@ -672,7 +723,6 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
             />
             Printing on Physical Letter Pad (hides digital letterhead image when printing)
           </label>
-
         </div>
         <button
           onClick={() => window.print()}
@@ -683,8 +733,10 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
       </div>
 
       {/* ================= PAGE 1 ================= */}
-      <section className="print-page relative w-[210mm] min-h-[297mm] bg-white flex flex-col justify-between shadow-lg border border-neutral-200 print:shadow-none print:border-none print:m-0 print:w-full print:min-h-0" style={{padding: 0}}>
-        
+      <section
+        className="print-page relative w-[210mm] min-h-[297mm] bg-white flex flex-col justify-between shadow-lg border border-neutral-200 print:shadow-none print:border-none print:m-0 print:w-full print:min-h-0"
+        style={{ padding: 0 }}
+      >
         {/* Full-page Letterpad Background Image — always visible on screen.
              When printing on physical letter pad paper, hide this so it doesn't
              print on top of the pre-printed paper header. */}
@@ -695,11 +747,10 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
         />
 
         {/* Spacer to push body below letterhead on screen and print */}
-        <div style={{height: '70mm'}} className="w-full flex-shrink-0 z-10 relative" />
+        <div style={{ height: "70mm" }} className="w-full flex-shrink-0 z-10 relative" />
 
         {/* Letter body — padded */}
         <div className="flex-1 z-10 relative px-[20mm] pb-[15mm] pt-[20px]">
-
           {/* Letter Meta */}
           <div className="flex justify-between items-center text-[13px] font-bold mb-5 mt-2">
             <div>No.{data.letter_no}</div>
@@ -727,34 +778,29 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
           {/* Salutation */}
           <div className="text-[13px] mb-3">Sir/Madam,</div>
 
-
           {/* Intro */}
           <p className="text-[13px] leading-[1.6] text-justify mb-4 indent-12">
-            {renderFormattedText(`we have the pleasure to inform you that you have been selected for engagement **for the post of ${data.post.toLowerCase()}** on the following terms and conditions:-`)}
+            {renderFormattedText(
+              `we have the pleasure to inform you that you have been selected for engagement **for the post of ${data.post.toLowerCase()}** on the following terms and conditions:-`,
+            )}
           </p>
 
           {/* Clauses list */}
           <div className="text-[13px] leading-[1.6] space-y-4 mt-2">
             <div className="flex items-start gap-3">
               <span className="w-6 text-right shrink-0 font-medium">i)</span>
-              <p className="text-justify">
-                {renderFormattedText(getClause("clause_i"))}
-              </p>
+              <p className="text-justify">{renderFormattedText(getClause("clause_i"))}</p>
             </div>
 
             <div className="flex items-start gap-3">
               <span className="w-6 text-right shrink-0 font-medium">ii)</span>
-              <p className="text-justify">
-                {renderFormattedText(getClause("clause_ii"))}
-              </p>
+              <p className="text-justify">{renderFormattedText(getClause("clause_ii"))}</p>
             </div>
 
             <div className="flex items-start gap-3">
               <span className="w-6 text-right shrink-0 font-medium">iii)</span>
               <div className="flex-1">
-                <p className="text-justify">
-                  {renderFormattedText(getClause("clause_iii"))}
-                </p>
+                <p className="text-justify">{renderFormattedText(getClause("clause_iii"))}</p>
                 <div className="pl-6 space-y-2 mt-2">
                   <div className="flex items-start gap-2">
                     <span className="w-4 shrink-0">a)</span>
@@ -772,19 +818,20 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
             </div>
           </div>
         </div>
-        <div className="text-center text-xs text-neutral-500 font-semibold select-none mt-4 z-10 relative px-[20mm] pb-[10mm]">-1-</div>
+        <div className="text-center text-xs text-neutral-500 font-semibold select-none mt-4 z-10 relative px-[20mm] pb-[10mm]">
+          -1-
+        </div>
       </section>
 
       {/* ================= PAGE 2 ================= */}
       <section className="print-page relative w-[210mm] min-h-[297mm] bg-white flex flex-col justify-between shadow-lg border border-neutral-200 print:shadow-none print:border-none print:m-0 print:w-full print:min-h-0">
-
         {/* Vaniki Watermark — same as letterpad (header area clipped) — hidden during print */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 print:hidden">
           <img
             src={letterpadBg}
             alt=""
             className="absolute w-full h-full object-fill"
-            style={{clipPath: 'inset(22% 0 0 0)'}}
+            style={{ clipPath: "inset(22% 0 0 0)" }}
           />
         </div>
 
@@ -795,30 +842,40 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
               <span className="w-6 text-right shrink-0 font-medium">iv)</span>
               <div className="flex-1">
                 <p className="font-bold mb-3">Main responsibilities:</p>
-                
+
                 {isSales || isManager ? (
                   <div className="pl-4 space-y-3">
                     <div className="flex items-start gap-3">
                       <span className="font-bold shrink-0">1)</span>
-                      <p className="text-justify">{renderFormattedText(getClause("clause_iv_1"))}</p>
+                      <p className="text-justify">
+                        {renderFormattedText(getClause("clause_iv_1"))}
+                      </p>
                     </div>
                     <div className="flex items-start gap-3">
                       <span className="font-bold shrink-0">2)</span>
-                      <p className="text-justify">{renderFormattedText(getClause("clause_iv_2"))}</p>
+                      <p className="text-justify">
+                        {renderFormattedText(getClause("clause_iv_2"))}
+                      </p>
                     </div>
                     <div className="flex items-start gap-3">
                       <span className="font-bold shrink-0">3)</span>
-                      <p className="text-justify">{renderFormattedText(getClause("clause_iv_3"))}</p>
+                      <p className="text-justify">
+                        {renderFormattedText(getClause("clause_iv_3"))}
+                      </p>
                     </div>
                     <div className="flex items-start gap-3">
                       <span className="font-bold shrink-0">4)</span>
-                      <p className="text-justify">{renderFormattedText(getClause("clause_iv_4"))}</p>
+                      <p className="text-justify">
+                        {renderFormattedText(getClause("clause_iv_4"))}
+                      </p>
                     </div>
                     <div className="flex items-start gap-3">
                       <span className="font-bold shrink-0">5)</span>
                       <div>
                         <p className="font-bold">Yearly Sale Target :-</p>
-                        <p className="mt-0.5 text-neutral-800">{renderFormattedText(data.sales_target) || "—"}</p>
+                        <p className="mt-0.5 text-neutral-800">
+                          {renderFormattedText(data.sales_target) || "—"}
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
@@ -835,19 +892,27 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
                   <div className="pl-4 space-y-3">
                     <div className="flex items-start gap-3">
                       <span className="font-bold shrink-0">1)</span>
-                      <p className="text-justify">{renderFormattedText(getClause("clause_iv_1"))}</p>
+                      <p className="text-justify">
+                        {renderFormattedText(getClause("clause_iv_1"))}
+                      </p>
                     </div>
                     <div className="flex items-start gap-3">
                       <span className="font-bold shrink-0">2)</span>
-                      <p className="text-justify">{renderFormattedText(getClause("clause_iv_2"))}</p>
+                      <p className="text-justify">
+                        {renderFormattedText(getClause("clause_iv_2"))}
+                      </p>
                     </div>
                     <div className="flex items-start gap-3">
                       <span className="font-bold shrink-0">3)</span>
-                      <p className="text-justify">{renderFormattedText(getClause("clause_iv_3"))}</p>
+                      <p className="text-justify">
+                        {renderFormattedText(getClause("clause_iv_3"))}
+                      </p>
                     </div>
                     <div className="flex items-start gap-3">
                       <span className="font-bold shrink-0">4)</span>
-                      <p className="text-justify">{renderFormattedText(getClause("clause_iv_4"))}</p>
+                      <p className="text-justify">
+                        {renderFormattedText(getClause("clause_iv_4"))}
+                      </p>
                     </div>
                     {data.incentive_rules && (
                       <div className="flex items-start gap-3">
@@ -867,65 +932,56 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
 
             <div className="flex items-start gap-3">
               <span className="w-6 text-right shrink-0 font-medium">v)</span>
-              <p className="text-justify">
-                {renderFormattedText(getClause("clause_v"))}
-              </p>
+              <p className="text-justify">{renderFormattedText(getClause("clause_v"))}</p>
             </div>
 
             <div className="flex items-start gap-3">
               <span className="w-6 text-right shrink-0 font-medium">vi)</span>
-              <p className="text-justify">
-                {renderFormattedText(getClause("clause_vi"))}
-              </p>
+              <p className="text-justify">{renderFormattedText(getClause("clause_vi"))}</p>
             </div>
 
             <div className="flex items-start gap-3">
               <span className="w-6 text-right shrink-0 font-medium">vii)</span>
-              <p className="text-justify">
-                {renderFormattedText(getClause("clause_vii"))}
-              </p>
+              <p className="text-justify">{renderFormattedText(getClause("clause_vii"))}</p>
             </div>
 
             <div className="flex items-start gap-3">
               <span className="w-6 text-right shrink-0 font-medium">viii)</span>
-              <p className="text-justify">
-                {renderFormattedText(getClause("clause_viii"))}
-              </p>
+              <p className="text-justify">{renderFormattedText(getClause("clause_viii"))}</p>
             </div>
 
             <div className="flex items-start gap-3">
               <span className="w-6 text-right shrink-0 font-medium">ix)</span>
-              <p className="text-justify">
-                {renderFormattedText(getClause("clause_ix"))}
-              </p>
+              <p className="text-justify">{renderFormattedText(getClause("clause_ix"))}</p>
             </div>
 
             <div className="flex items-start gap-3">
               <span className="w-6 text-right shrink-0 font-medium">x)</span>
-              <p className="text-justify">
-                {renderFormattedText(getClause("clause_x"))}
-              </p>
+              <p className="text-justify">{renderFormattedText(getClause("clause_x"))}</p>
             </div>
 
             {/* Section 2 */}
             <div className="pt-2">
-              <div className="whitespace-pre-line">{renderFormattedText(getClause("clause_2_cert"))}</div>
+              <div className="whitespace-pre-line">
+                {renderFormattedText(getClause("clause_2_cert"))}
+              </div>
             </div>
           </div>
         </div>
-        <div className="text-center text-xs text-neutral-500 font-semibold select-none mt-4 z-10 relative px-[20mm] pb-[12mm]">-2-</div>
+        <div className="text-center text-xs text-neutral-500 font-semibold select-none mt-4 z-10 relative px-[20mm] pb-[12mm]">
+          -2-
+        </div>
       </section>
 
       {/* ================= PAGE 3 ================= */}
       <section className="print-page relative w-[210mm] min-h-[297mm] bg-white flex flex-col justify-between shadow-lg border border-neutral-200 print:shadow-none print:border-none print:m-0 print:w-full print:min-h-0">
-
         {/* Vaniki Watermark — hidden during print */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 print:hidden">
           <img
             src={letterpadBg}
             alt=""
             className="absolute w-full h-full object-fill"
-            style={{clipPath: 'inset(22% 0 0 0)'}}
+            style={{ clipPath: "inset(22% 0 0 0)" }}
           />
         </div>
 
@@ -933,93 +989,71 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
           <div className="text-[13px] leading-[1.6] space-y-4">
             <div className="flex items-start gap-3">
               <span className="w-6 text-right shrink-0 font-bold">3.</span>
-              <p className="text-justify">
-                {renderFormattedText(getClause("clause_3"))}
-              </p>
+              <p className="text-justify">{renderFormattedText(getClause("clause_3"))}</p>
             </div>
 
             <div className="flex items-start gap-3">
               <span className="w-6 text-right shrink-0 font-bold">4.</span>
-              <p className="text-justify">
-                {renderFormattedText(getClause("clause_4"))}
-              </p>
+              <p className="text-justify">{renderFormattedText(getClause("clause_4"))}</p>
             </div>
 
             <div className="flex items-start gap-3">
               <span className="w-6 text-right shrink-0 font-bold">4.1</span>
-              <p className="text-justify">
-                {renderFormattedText(getClause("clause_4_1"))}
-              </p>
+              <p className="text-justify">{renderFormattedText(getClause("clause_4_1"))}</p>
             </div>
 
             <div className="flex items-start gap-3">
               <span className="w-6 text-right shrink-0 font-bold">5.</span>
-              <p className="text-justify">
-                {renderFormattedText(getClause("clause_5"))}
-              </p>
+              <p className="text-justify">{renderFormattedText(getClause("clause_5"))}</p>
             </div>
 
             <div className="flex items-start gap-3">
               <span className="w-6 text-right shrink-0 font-bold">6.</span>
-              <p className="text-justify">
-                {renderFormattedText(getClause("clause_6"))}
-              </p>
+              <p className="text-justify">{renderFormattedText(getClause("clause_6"))}</p>
             </div>
 
             <div className="flex items-start gap-3">
               <span className="w-6 text-right shrink-0 font-bold">7.</span>
-              <p className="text-justify">
-                {renderFormattedText(getClause("clause_7"))}
-              </p>
+              <p className="text-justify">{renderFormattedText(getClause("clause_7"))}</p>
             </div>
 
             <div className="flex items-start gap-3">
               <span className="w-6 text-right shrink-0 font-bold">8.</span>
-              <p className="text-justify">
-                {renderFormattedText(getClause("clause_8"))}
-              </p>
+              <p className="text-justify">{renderFormattedText(getClause("clause_8"))}</p>
             </div>
 
             <div className="flex items-start gap-3">
               <span className="w-6 text-right shrink-0 font-bold">9.</span>
-              <p className="text-justify">
-                {renderFormattedText(getClause("clause_9"))}
-              </p>
+              <p className="text-justify">{renderFormattedText(getClause("clause_9"))}</p>
             </div>
 
             <div className="flex items-start gap-3">
               <span className="w-6 text-right shrink-0 font-bold">10.</span>
-              <p className="text-justify">
-                {renderFormattedText(getClause("clause_10"))}
-              </p>
+              <p className="text-justify">{renderFormattedText(getClause("clause_10"))}</p>
             </div>
 
             <div className="flex items-start gap-3">
               <span className="w-6 text-right shrink-0 font-bold">11.</span>
-              <p className="text-justify">
-                {renderFormattedText(getClause("clause_11"))}
-              </p>
+              <p className="text-justify">{renderFormattedText(getClause("clause_11"))}</p>
             </div>
 
             <div className="flex items-start gap-3">
               <span className="w-6 text-right shrink-0 font-bold">12.</span>
-              <p className="text-justify">
-                {renderFormattedText(getClause("clause_12"))}
-              </p>
+              <p className="text-justify">{renderFormattedText(getClause("clause_12"))}</p>
             </div>
 
             <div className="flex items-start gap-3">
               <span className="w-6 text-right shrink-0 font-bold">13.</span>
-              <p className="text-justify">
-                {renderFormattedText(getClause("clause_13"))}
-              </p>
+              <p className="text-justify">{renderFormattedText(getClause("clause_13"))}</p>
             </div>
           </div>
 
           {/* Custom Blocks container */}
           {userCustomBlocks.length > 0 && (
             <div className="mt-8 border-t border-neutral-200 pt-4">
-              <h4 className="font-bold text-[13px] uppercase underline mb-3">Additional Clauses / Special Conditions</h4>
+              <h4 className="font-bold text-[13px] uppercase underline mb-3">
+                Additional Clauses / Special Conditions
+              </h4>
               <ol className="list-decimal pl-5 space-y-2 text-[13px]">
                 {userCustomBlocks.map((b, idx) => (
                   <li key={b.id ?? idx} className="text-justify">
@@ -1030,19 +1064,20 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
             </div>
           )}
         </div>
-        <div className="text-center text-xs text-neutral-500 font-semibold select-none mt-4 z-10 relative px-[20mm] pb-[12mm]">-3-</div>
+        <div className="text-center text-xs text-neutral-500 font-semibold select-none mt-4 z-10 relative px-[20mm] pb-[12mm]">
+          -3-
+        </div>
       </section>
 
       {/* ================= PAGE 4 ================= */}
       <section className="print-page relative w-[210mm] min-h-[297mm] bg-white flex flex-col justify-between shadow-lg border border-neutral-200 print:shadow-none print:border-none print:m-0 print:w-full print:min-h-0">
-
         {/* Vaniki Watermark — hidden during print */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 print:hidden">
           <img
             src={letterpadBg}
             alt=""
             className="absolute w-full h-full object-fill"
-            style={{clipPath: 'inset(22% 0 0 0)'}}
+            style={{ clipPath: "inset(22% 0 0 0)" }}
           />
         </div>
 
@@ -1052,23 +1087,27 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
             <div className="w-[300px]">
               <p>Yours Sincerely,</p>
               <p className="font-bold mt-1">For and on behalf of VANIKI CROP SCIENCE PVT. LTD.,</p>
-              
+
               {/* Spacer for physical signature and stamp */}
               <div className="h-28"></div>
- 
+
               <p className="font-bold">DIRECTOR</p>
             </div>
           </div>
 
           {/* Declaration Section */}
           <div className="mt-14 border-t border-dashed border-neutral-300 pt-8 text-[13px] leading-relaxed">
-            <h3 className="text-center font-bold text-[14px] underline mb-6 tracking-wide uppercase">DECLARATION</h3>
+            <h3 className="text-center font-bold text-[14px] underline mb-6 tracking-wide uppercase">
+              DECLARATION
+            </h3>
             <p className="mb-8">I accept all the above terms, targets & incentive structure.</p>
-            
+
             <div className="space-y-6 max-w-[500px]">
               <div className="flex items-center gap-2">
                 <span className="font-medium">Employee Name:</span>
-                <span className="font-bold underline uppercase tracking-wide">{data.employee_name}</span>
+                <span className="font-bold underline uppercase tracking-wide">
+                  {data.employee_name}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="font-medium shrink-0">Signature of the Candidate:</span>
@@ -1081,7 +1120,9 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
             </div>
           </div>
         </div>
-        <div className="text-center text-xs text-neutral-500 font-semibold select-none mt-4 z-10 relative px-[20mm] pb-[12mm]">-4-</div>
+        <div className="text-center text-xs text-neutral-500 font-semibold select-none mt-4 z-10 relative px-[20mm] pb-[12mm]">
+          -4-
+        </div>
       </section>
     </article>
   );

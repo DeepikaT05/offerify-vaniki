@@ -25,11 +25,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 import {
   applyRoleDefaults,
@@ -67,7 +63,9 @@ function parseSchemeProducts(jsonStr?: string): SchemeProduct[] {
   try {
     const parsed = JSON.parse(jsonStr);
     if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-  } catch (e) {}
+  } catch (_e) {
+    // ignore parse error
+  }
   return [
     { id: "1", name: "HULK", target: "100 LTR", status: "Achieved" },
     { id: "2", name: "RUBICON", target: "50 LTR", status: "Achieved" },
@@ -162,7 +160,9 @@ export function OfferLetterForm({ initial, letterId }: Props) {
           company_corporate_add: parsed.company_corporate_add ?? base.company_corporate_add,
           company_shop_add: parsed.company_shop_add ?? base.company_shop_add,
         };
-      } catch (e) {}
+      } catch (_e) {
+        // ignore parse error
+      }
     }
     return base;
   });
@@ -178,7 +178,9 @@ export function OfferLetterForm({ initial, letterId }: Props) {
     const t = setTimeout(() => {
       try {
         localStorage.setItem(DRAFT_KEY, JSON.stringify(form));
-      } catch { }
+      } catch {
+        // ignore
+      }
     }, 400);
     return () => clearTimeout(t);
   }, [form, letterId]);
@@ -192,7 +194,9 @@ export function OfferLetterForm({ initial, letterId }: Props) {
         const parsed = JSON.parse(raw);
         if (parsed && typeof parsed === "object") setForm(parsed);
       }
-    } catch { }
+    } catch {
+      // ignore
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -270,9 +274,11 @@ export function OfferLetterForm({ initial, letterId }: Props) {
         company_name: form.company_name ?? "VANIKI CROP SCIENCE PVT. LTD.",
         company_gstin: form.company_gstin ?? "22AAJCV1916A1ZV",
         company_phone: form.company_phone ?? "9302228883",
-        company_corporate_add: form.company_corporate_add ?? "Shop No.34, Krishi Upaj Mandi, Dhamdha Road, Durg 491001 (C.G.)",
+        company_corporate_add:
+          form.company_corporate_add ??
+          "Shop No.34, Krishi Upaj Mandi, Dhamdha Road, Durg 491001 (C.G.)",
         company_shop_add: form.company_shop_add ?? "Bazar Chowk Bori, Dist-Durg 491001 (C.G.)",
-      })
+      }),
     };
 
     const {
@@ -288,13 +294,13 @@ export function OfferLetterForm({ initial, letterId }: Props) {
     dbForm.custom_blocks = [...cleanBlocks, companyDetailsBlock];
 
     try {
-      const saved = letterId
-        ? await updateLetter(letterId, dbForm)
-        : await createLetter(dbForm);
+      const saved = letterId ? await updateLetter(letterId, dbForm) : await createLetter(dbForm);
       if (!letterId) {
         try {
           localStorage.removeItem(DRAFT_KEY);
-        } catch { }
+        } catch {
+          // ignore
+        }
       }
       if (saved.id.startsWith("local-")) {
         toast.info("Saved locally in browser (Offline Mode)");
@@ -410,11 +416,16 @@ export function OfferLetterForm({ initial, letterId }: Props) {
         <div className="space-y-6">
           <Card className="border-l-4 border-l-brand">
             <CardHeader>
-              <CardTitle className="text-base">2. Lifting Discount Recipient & Offer Details</CardTitle>
+              <CardTitle className="text-base">
+                2. Lifting Discount Recipient & Offer Details
+              </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <Field label="Letter / Ref No." required>
-                <Input value={form.letter_no} onChange={(e) => update("letter_no", e.target.value)} />
+                <Input
+                  value={form.letter_no}
+                  onChange={(e) => update("letter_no", e.target.value)}
+                />
               </Field>
               <Field label="Date" required>
                 <Input
@@ -523,7 +534,7 @@ export function OfferLetterForm({ initial, letterId }: Props) {
                   const minQty = form.contract_period || "100 litres";
                   update(
                     "incentive_rules",
-                    `We are pleased to offer you a special lifting discount of **${discount}** on **${product}**, subject to a minimum purchase quantity of **${minQty}**.\n\nWe value your association with our company and look forward to strengthening our business relationship in the future.\n\nWe request you to kindly take advantage of this special offer.\n\nThank you for your continued trust and support.`
+                    `We are pleased to offer you a special lifting discount of **${discount}** on **${product}**, subject to a minimum purchase quantity of **${minQty}**.\n\nWe value your association with our company and look forward to strengthening our business relationship in the future.\n\nWe request you to kindly take advantage of this special offer.\n\nThank you for your continued trust and support.`,
                   );
                   toast.success("Updated text from fields!");
                 }}
@@ -540,7 +551,8 @@ export function OfferLetterForm({ initial, letterId }: Props) {
                 className="text-sm leading-relaxed"
               />
               <p className="mt-2 text-xs text-muted-foreground">
-                Wrap any text in <strong>**double asterisks**</strong> to make it <strong>bold</strong>.
+                Wrap any text in <strong>**double asterisks**</strong> to make it{" "}
+                <strong>bold</strong>.
               </p>
             </CardContent>
           </Card>
@@ -549,11 +561,16 @@ export function OfferLetterForm({ initial, letterId }: Props) {
         <div className="space-y-6">
           <Card className="border-l-4 border-l-brand">
             <CardHeader>
-              <CardTitle className="text-base">2. डीलर एवं गोल्ड स्कीम विवरण (Dealer & Gold Scheme Details)</CardTitle>
+              <CardTitle className="text-base">
+                2. डीलर एवं गोल्ड स्कीम विवरण (Dealer & Gold Scheme Details)
+              </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <Field label="रेफरेंस नं. (Ref No.)" required>
-                <Input value={form.letter_no} onChange={(e) => update("letter_no", e.target.value)} />
+                <Input
+                  value={form.letter_no}
+                  onChange={(e) => update("letter_no", e.target.value)}
+                />
               </Field>
               <Field label="दिनांक (Date)" required>
                 <Input
@@ -625,7 +642,9 @@ export function OfferLetterForm({ initial, letterId }: Props) {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle className="text-base">3. Target Achievement Details (उत्पाद एवं टारगेट विवरण)</CardTitle>
+                <CardTitle className="text-base">
+                  3. Target Achievement Details (उत्पाद एवं टारगेट विवरण)
+                </CardTitle>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   यह तालिका पत्र में 'Target Achievement Details' के रूप में प्रिंट होगी।
                 </p>
@@ -637,7 +656,10 @@ export function OfferLetterForm({ initial, letterId }: Props) {
                 onClick={() => {
                   const current = parseSchemeProducts(form.sales_target);
                   const nextId = (current.length + 1).toString();
-                  const updated = [...current, { id: nextId, name: "", target: "", status: "Achieved" }];
+                  const updated = [
+                    ...current,
+                    { id: nextId, name: "", target: "", status: "Achieved" },
+                  ];
                   update("sales_target", JSON.stringify(updated));
                 }}
               >
@@ -653,7 +675,10 @@ export function OfferLetterForm({ initial, letterId }: Props) {
                 <div className="col-span-1 text-right">हटाएं</div>
               </div>
               {parseSchemeProducts(form.sales_target).map((p, idx) => (
-                <div key={p.id || idx} className="grid grid-cols-12 gap-2 items-center rounded-md border p-2 bg-muted/20">
+                <div
+                  key={p.id || idx}
+                  className="grid grid-cols-12 gap-2 items-center rounded-md border p-2 bg-muted/20"
+                >
                   <div className="col-span-1 font-bold text-center text-sm">{idx + 1}</div>
                   <div className="col-span-5">
                     <Input
@@ -710,7 +735,9 @@ export function OfferLetterForm({ initial, letterId }: Props) {
           {/* Body Text Card */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-base">4. पत्र का मुख्य विवरण एवं संदेश (Letter Body Text)</CardTitle>
+              <CardTitle className="text-base">
+                4. पत्र का मुख्य विवरण एवं संदेश (Letter Body Text)
+              </CardTitle>
               <Button
                 type="button"
                 variant="outline"
@@ -722,7 +749,7 @@ export function OfferLetterForm({ initial, letterId }: Props) {
                   const reward = form.hq || "2 ग्राम गोल्ड स्कीम";
                   update(
                     "incentive_rules",
-                    `महोदय,\nहमे यह बताते हुए हर्ष हो रहा है की **${company}** द्वारा संचालित **${scheme}** के अंतर्गत कंपनी में आपका **${amount}** की राशि सफलतापूर्वक जमा कर दी गई है।\nइसके साथ ही, आपने निर्धारित खरीद टारगेट भी सफलतापूर्वक प्राप्त कर लिया है। आपकी इस उपलब्धि के लिए हम आपको हार्दिक बधाई देते है।\n\n---TABLE---\n\n**Congratulations**\n\nआपको यह सूचित करते हुए प्रसन्नता हो रही है की आपने निर्धारित खरीद टारगेट पूरा कर लिया है तथा जमा राशि की शर्त भी सफलतापूर्वक पूरी कर ली है। अतः आप कंपनी की **${reward}** के अंतर्गत लाभ प्राप्त करने के लिए पात्र है।\n\nहम आपके विश्वास, सहयोग एवं कंपनी के उत्पादों के प्रति आपके योगदान की सराहना करते है। भविष्य में भी आपके साथ हमारे व्यवसायिक संबंध और अधिक मजबूत एवं सफल बने रहे, यही हमारी कामना है।\n\nहार्दिक शुभकामनाएँ सहित,`
+                    `महोदय,\nहमे यह बताते हुए हर्ष हो रहा है की **${company}** द्वारा संचालित **${scheme}** के अंतर्गत कंपनी में आपका **${amount}** की राशि सफलतापूर्वक जमा कर दी गई है।\nइसके साथ ही, आपने निर्धारित खरीद टारगेट भी सफलतापूर्वक प्राप्त कर लिया है। आपकी इस उपलब्धि के लिए हम आपको हार्दिक बधाई देते है।\n\n---TABLE---\n\n**Congratulations**\n\nआपको यह सूचित करते हुए प्रसन्नता हो रही है की आपने निर्धारित खरीद टारगेट पूरा कर लिया है तथा जमा राशि की शर्त भी सफलतापूर्वक पूरी कर ली है। अतः आप कंपनी की **${reward}** के अंतर्गत लाभ प्राप्त करने के लिए पात्र है।\n\nहम आपके विश्वास, सहयोग एवं कंपनी के उत्पादों के प्रति आपके योगदान की सराहना करते है। भविष्य में भी आपके साथ हमारे व्यवसायिक संबंध और अधिक मजबूत एवं सफल बने रहे, यही हमारी कामना है।\n\nहार्दिक शुभकामनाएँ सहित,`,
                   );
                   toast.success("Updated Hindi text template!");
                 }}
@@ -739,7 +766,9 @@ export function OfferLetterForm({ initial, letterId }: Props) {
                 className="text-sm leading-relaxed font-sans"
               />
               <p className="mt-2 text-xs text-muted-foreground">
-                💡 पत्र में जिस स्थान पर <strong>---TABLE---</strong> लिखा होगा, वहाँ ऊपर दी गई उत्पाद तालिका स्वतः प्रिंट होगी। बोल्ड करने हेतु <strong>**शब्द**</strong> का प्रयोग करें।
+                💡 पत्र में जिस स्थान पर <strong>---TABLE---</strong> लिखा होगा, वहाँ ऊपर दी गई
+                उत्पाद तालिका स्वतः प्रिंट होगी। बोल्ड करने हेतु <strong>**शब्द**</strong> का प्रयोग
+                करें।
               </p>
             </CardContent>
           </Card>
@@ -753,7 +782,10 @@ export function OfferLetterForm({ initial, letterId }: Props) {
             </CardHeader>
             <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <Field label="Letter No." required>
-                <Input value={form.letter_no} onChange={(e) => update("letter_no", e.target.value)} />
+                <Input
+                  value={form.letter_no}
+                  onChange={(e) => update("letter_no", e.target.value)}
+                />
               </Field>
               <Field label="Date" required>
                 <Input
@@ -835,9 +867,7 @@ export function OfferLetterForm({ initial, letterId }: Props) {
               <CardHeader>
                 <CollapsibleTrigger className="flex w-full items-center justify-between">
                   <CardTitle className="text-base">3. Letter Terms & Conditions</CardTitle>
-                  <ChevronDown
-                    className={`h-4 w-4 transition ${termsOpen ? "rotate-180" : ""}`}
-                  />
+                  <ChevronDown className={`h-4 w-4 transition ${termsOpen ? "rotate-180" : ""}`} />
                 </CollapsibleTrigger>
               </CardHeader>
               <CollapsibleContent>
@@ -930,8 +960,12 @@ export function OfferLetterForm({ initial, letterId }: Props) {
             <Collapsible open={companyOpen} onOpenChange={setCompanyOpen}>
               <CardHeader>
                 <CollapsibleTrigger className="flex w-full items-center justify-between">
-                  <CardTitle className="text-base">4. Company & Header Details (Optional)</CardTitle>
-                  <ChevronDown className={`h-4 w-4 transition ${companyOpen ? "rotate-180" : ""}`} />
+                  <CardTitle className="text-base">
+                    4. Company & Header Details (Optional)
+                  </CardTitle>
+                  <ChevronDown
+                    className={`h-4 w-4 transition ${companyOpen ? "rotate-180" : ""}`}
+                  />
                 </CollapsibleTrigger>
               </CardHeader>
               <CollapsibleContent>
@@ -977,7 +1011,9 @@ export function OfferLetterForm({ initial, letterId }: Props) {
             <Collapsible open={clausesOpen} onOpenChange={setClausesOpen}>
               <CardHeader>
                 <CollapsibleTrigger className="flex w-full items-center justify-between">
-                  <CardTitle className="text-base">5. Edit Standard Clauses & Letter Text (Optional Overrides)</CardTitle>
+                  <CardTitle className="text-base">
+                    5. Edit Standard Clauses & Letter Text (Optional Overrides)
+                  </CardTitle>
                   <ChevronDown
                     className={`h-4 w-4 transition ${clausesOpen ? "rotate-180" : ""}`}
                   />
@@ -988,43 +1024,54 @@ export function OfferLetterForm({ initial, letterId }: Props) {
                   <p className="text-xs text-neutral-600 mb-4 bg-neutral-50 border border-dashed rounded p-3 leading-relaxed">
                     💡 <strong>How to customize & format:</strong>
                     <br />
-                    • Edit any clause below to customize its text. The clause will lock and stop auto-updating when you change details above.
-                    <br />
-                    • To make any word or sentence <strong>bold</strong>, wrap it in double asterisks like <strong>**your text**</strong> or use HTML tags like <strong>&lt;b&gt;your text&lt;/b&gt;</strong>.
-                    <br />
-                    • Click <strong>"Reset to Template"</strong> to return the clause back to the automatic template.
+                    • Edit any clause below to customize its text. The clause will lock and stop
+                    auto-updating when you change details above.
+                    <br />• To make any word or sentence <strong>bold</strong>, wrap it in double
+                    asterisks like <strong>**your text**</strong> or use HTML tags like{" "}
+                    <strong>&lt;b&gt;your text&lt;/b&gt;</strong>.
+                    <br />• Click <strong>"Reset to Template"</strong> to return the clause back to
+                    the automatic template.
                   </p>
-                  
+
                   {/* Group clauses by category */}
-                  {Array.from(new Set(STANDARD_CLAUSES.map(c => c.category))).map(category => (
+                  {Array.from(new Set(STANDARD_CLAUSES.map((c) => c.category))).map((category) => (
                     <div key={category} className="space-y-4">
                       <h3 className="text-sm font-bold text-brand border-b pb-1.5">{category}</h3>
                       <div className="grid grid-cols-1 gap-4">
-                        {STANDARD_CLAUSES.filter(c => c.category === category).map((clause) => {
+                        {STANDARD_CLAUSES.filter((c) => c.category === category).map((clause) => {
                           const overrideBlock = form.custom_blocks.find(
-                            (b) => b.id === clause.id && b.heading === "__clause_override__"
+                            (b) => b.id === clause.id && b.heading === "__clause_override__",
                           );
                           const isOverridden = !!overrideBlock;
-                          const activeText = isOverridden 
-                            ? overrideBlock.content 
+                          const activeText = isOverridden
+                            ? overrideBlock.content
                             : getDefaultClauseText(clause.id, form);
 
                           return (
-                            <div key={clause.id} className="rounded-lg border border-border bg-card p-4 space-y-2.5">
+                            <div
+                              key={clause.id}
+                              className="rounded-lg border border-border bg-card p-4 space-y-2.5"
+                            >
                               <div className="flex items-center justify-between">
-                                <span className="text-xs font-bold text-neutral-700 uppercase tracking-wider">{clause.label}</span>
+                                <span className="text-xs font-bold text-neutral-700 uppercase tracking-wider">
+                                  {clause.label}
+                                </span>
                                 {isOverridden ? (
                                   <div className="flex items-center gap-2">
-                                    <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Customized</span>
+                                    <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                                      Customized
+                                    </span>
                                     <Button
                                       type="button"
                                       variant="ghost"
                                       size="sm"
                                       className="h-6 text-[10px] text-destructive hover:text-destructive/90 px-2"
                                       onClick={() => {
-                                        setForm(prev => ({
+                                        setForm((prev) => ({
                                           ...prev,
-                                          custom_blocks: prev.custom_blocks.filter(b => b.id !== clause.id)
+                                          custom_blocks: prev.custom_blocks.filter(
+                                            (b) => b.id !== clause.id,
+                                          ),
                                         }));
                                       }}
                                     >
@@ -1032,10 +1079,12 @@ export function OfferLetterForm({ initial, letterId }: Props) {
                                     </Button>
                                   </div>
                                 ) : (
-                                  <span className="text-[10px] font-bold text-neutral-400 bg-neutral-50 px-2 py-0.5 rounded border">Template (Auto)</span>
+                                  <span className="text-[10px] font-bold text-neutral-400 bg-neutral-50 px-2 py-0.5 rounded border">
+                                    Template (Auto)
+                                  </span>
                                 )}
                               </div>
-                              
+
                               <Textarea
                                 rows={3}
                                 value={activeText}
@@ -1043,8 +1092,10 @@ export function OfferLetterForm({ initial, letterId }: Props) {
                                 className={`text-xs leading-relaxed ${isOverridden ? "border-amber-300 focus-visible:ring-amber-500 font-medium" : "text-neutral-500"}`}
                                 onChange={(e) => {
                                   const val = e.target.value;
-                                  setForm(prev => {
-                                    const cleanBlocks = prev.custom_blocks.filter(b => b.id !== clause.id);
+                                  setForm((prev) => {
+                                    const cleanBlocks = prev.custom_blocks.filter(
+                                      (b) => b.id !== clause.id,
+                                    );
                                     return {
                                       ...prev,
                                       custom_blocks: [
@@ -1052,9 +1103,9 @@ export function OfferLetterForm({ initial, letterId }: Props) {
                                         {
                                           id: clause.id,
                                           heading: "__clause_override__",
-                                          content: val
-                                        }
-                                      ]
+                                          content: val,
+                                        },
+                                      ],
                                     };
                                   });
                                 }}

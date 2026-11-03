@@ -1,4 +1,13 @@
-export type Role = "developer" | "sales" | "manager" | "hr" | "field_assistant" | "other" | "stockiest" | "lifting_discount" | "dealer_scheme";
+export type Role =
+  | "developer"
+  | "sales"
+  | "manager"
+  | "hr"
+  | "field_assistant"
+  | "other"
+  | "stockiest"
+  | "lifting_discount"
+  | "dealer_scheme";
 
 export interface CustomBlock {
   id: string;
@@ -65,7 +74,8 @@ export const ROLE_DEFAULTS: Record<Role, Partial<OfferLetterFormState>> = {
     sales_target: "",
     contract_period: "one years",
     post: "DEVELOPER",
-    incentive_rules: "Performance-based quarterly bonus as per project deliverables and code quality reviews.",
+    incentive_rules:
+      "Performance-based quarterly bonus as per project deliverables and code quality reviews.",
     joining_deadline: "15.06.2026 and in any case not later than 30.06.2026",
     jurisdiction: "DURG",
   },
@@ -135,7 +145,8 @@ Incentive Pay on Year End.`,
     salary: "",
     hq: "",
     sales_target: "",
-    incentive_rules: "it is certify to that the company source certificate No. **05** Date **01.05.2025** has been supply to, **M/S. Unnat Krishi Sewa Kendra-Ahiwara, Dist-Drug** is the authorized Stockiest of **Vaniki Crop Science Private Limited**",
+    incentive_rules:
+      "it is certify to that the company source certificate No. **05** Date **01.05.2025** has been supply to, **M/S. Unnat Krishi Sewa Kendra-Ahiwara, Dist-Drug** is the authorized Stockiest of **Vaniki Crop Science Private Limited**",
     contract_period: "",
     annual_increment: "",
     joining_deadline: "",
@@ -242,10 +253,6 @@ Incentive Pay on Year End.
   return { ...base, ...ROLE_DEFAULTS[role] };
 }
 
-export function applyRoleDefaults(
-  state: OfferLetterFormState,
-  role: Role,
-): OfferLetterFormState {
+export function applyRoleDefaults(state: OfferLetterFormState, role: Role): OfferLetterFormState {
   return { ...state, role, ...ROLE_DEFAULTS[role] };
 }
-
