@@ -550,7 +550,7 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
           <div style={{ height: "70mm" }} className="w-full flex-shrink-0 z-10 relative" />
 
           {/* Body */}
-          <div className="flex-grow z-10 relative px-[22mm] pb-[16mm] pt-[4mm] flex flex-col justify-between">
+          <div className="flex-grow z-10 relative px-[22mm] pb-[16mm] pt-[4mm] flex flex-col justify-start">
             <div>
               {/* Recipient */}
               <div className="text-[13.5px] text-neutral-900 leading-snug mb-3 space-y-0.5">
@@ -633,11 +633,8 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
             </div>
 
             {/* Footer Signatory */}
-            <div className="mt-6 space-y-1 text-[13px]">
-              <p className="font-bold text-blue-900 uppercase">
-                {data.company_name || "VANIKI CROP SCIENCE PVT. LTD."}
-              </p>
-              <div className="h-16"></div>
+            <div className="mt-4 space-y-1 text-[13px]">
+              <div className="h-12"></div>
               <p className="font-bold text-neutral-900">
                 {data.jurisdiction || "अधिकृत हस्ताक्षरकर्ता"}
               </p>
