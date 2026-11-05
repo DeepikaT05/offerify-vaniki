@@ -633,8 +633,8 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
             </div>
 
             {/* Footer Signatory */}
-            <div className="mt-4 space-y-1 text-[13px]">
-              <div className="h-12"></div>
+            <div className="mt-12 space-y-1 text-[13px]">
+              <div className="h-16"></div>
               <p className="font-bold text-neutral-900">
                 {data.jurisdiction || "अधिकृत हस्ताक्षरकर्ता"}
               </p>
