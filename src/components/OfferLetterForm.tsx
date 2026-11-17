@@ -15,6 +15,7 @@ import {
   FileText,
   Percent,
   Award,
+  GraduationCap,
   RefreshCw,
   ChevronDown,
 } from "lucide-react";
@@ -31,6 +32,7 @@ import {
   applyRoleDefaults,
   defaultFormState,
   ROLE_LABELS,
+  POSITION_TEMPLATES,
   type CustomBlock,
   type OfferLetterFormState,
   type Role,
@@ -111,6 +113,19 @@ function calculateNextLetterNo(role: Role, letters: OfferLetterRow[]): string {
     });
     const nextNum = maxNum + 1;
     return `DS-${nextNum.toString().padStart(2, "0")}`;
+  } else if (role === "experience_letter") {
+    let maxNum = 0;
+    letters.forEach((l) => {
+      if (l.role === "experience_letter" && l.letter_no) {
+        const match = l.letter_no.match(/EXP-(\d+)/i) || l.letter_no.match(/OL-(\d+)/i);
+        if (match) {
+          const num = parseInt(match[1], 10);
+          if (num > maxNum) maxNum = num;
+        }
+      }
+    });
+    const nextNum = maxNum + 1;
+    return `EXP-${nextNum.toString().padStart(2, "0")}`;
   } else {
     let maxNum = 0;
     letters.forEach((l) => {
@@ -118,6 +133,7 @@ function calculateNextLetterNo(role: Role, letters: OfferLetterRow[]): string {
         l.role !== "stockiest" &&
         l.role !== "lifting_discount" &&
         l.role !== "dealer_scheme" &&
+        l.role !== "experience_letter" &&
         l.letter_no
       ) {
         const match = l.letter_no.match(/VN-(\d+)/i);
@@ -133,6 +149,7 @@ function calculateNextLetterNo(role: Role, letters: OfferLetterRow[]): string {
 }
 
 const ROLE_CARDS: { role: Role; Icon: typeof Code; tagline: string }[] = [
+  { role: "experience_letter", Icon: GraduationCap, tagline: "Single page letter on letterpad" },
   { role: "developer", Icon: Code, tagline: "Engineering & product team" },
   { role: "sales", Icon: Briefcase, tagline: "Field sales & territory" },
   { role: "manager", Icon: UserCog, tagline: "Team leadership" },
@@ -770,6 +787,249 @@ export function OfferLetterForm({ initial, letterId }: Props) {
                 उत्पाद तालिका स्वतः प्रिंट होगी। बोल्ड करने हेतु <strong>**शब्द**</strong> का प्रयोग
                 करें।
               </p>
+            </CardContent>
+          </Card>
+        </div>
+      ) : form.role === "experience_letter" ? (
+        <div className="space-y-6">
+          {/* Preset & Document Type */}
+          <Card className="border-l-4 border-l-brand">
+            <CardHeader>
+              <CardTitle className="text-base">2. Select Job Position & Letter Style</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 block">
+                  Quick Position Templates (Click to Auto-fill for that job)
+                </Label>
+                <div className="flex flex-wrap gap-2">
+                  {POSITION_TEMPLATES.map((tmpl) => (
+                    <Button
+                      key={tmpl.key}
+                      type="button"
+                      size="sm"
+                      variant={form.post === tmpl.post ? "default" : "outline"}
+                      onClick={() => {
+                        update("post", tmpl.post);
+                        update("sales_target", tmpl.experienceTenure);
+                        const endD = form.notice_period || "23rd July 2026";
+                        update(
+                          "incentive_rules",
+                          tmpl.experienceRelieving.replace("{endDate}", endD),
+                        );
+                        toast.success(`Loaded ${tmpl.label} details`);
+                      }}
+                    >
+                      {tmpl.label}
+                    </Button>
+                  ))}
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      update("post", "CUSTOM POSITION");
+                    }}
+                  >
+                    + Custom Position
+                  </Button>
+                </div>
+              </div>
+
+              <div className="pt-3 flex flex-wrap items-center gap-3 border-t">
+                <span className="text-xs font-semibold text-neutral-600">
+                  Letter Purpose / Mode:
+                </span>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={
+                    form.contract_period?.toLowerCase().includes("concern")
+                      ? "secondary"
+                      : "outline"
+                  }
+                  onClick={() => {
+                    update("contract_period", "TO WHOM SO EVER IT MAY CONCERN");
+                    const endD = form.notice_period || "23rd July 2026";
+                    update(
+                      "incentive_rules",
+                      `He has been relieved of his duties effective ${endD}, with all formalities completed. We sincerely appreciate his contributions and wish him success in his future endeavours.`,
+                    );
+                    update("village", "");
+                    toast.info("Switched to Experience & Relieving Certificate");
+                  }}
+                >
+                  Experience & Relieving Certificate (Clarico Format)
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={
+                    form.contract_period?.toLowerCase().includes("offer") ? "secondary" : "outline"
+                  }
+                  onClick={() => {
+                    update("contract_period", "OFFER LETTER");
+                    update(
+                      "village",
+                      `We are pleased to offer you appointment with our organization as **${form.post || "BUSINESS ANALYST"}** effective from **${form.joining_deadline || "19th August 2024"}**.`,
+                    );
+                    update(
+                      "incentive_rules",
+                      "We look forward to a mutually beneficial relationship and wish you a rewarding career with Vaniki Crop Science Private Limited. Please sign and return the duplicate copy of this letter as acceptance.",
+                    );
+                    toast.info("Switched to Single-Page Offer Letter");
+                  }}
+                >
+                  Single-Page Offer Letter
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Primary Details */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">3. Employee & Tenure Details</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Field label="Letter / Ref No." required>
+                <Input
+                  value={form.letter_no}
+                  onChange={(e) => update("letter_no", e.target.value)}
+                  placeholder="EXP-01"
+                />
+              </Field>
+              <Field label="Issue Date" required>
+                <Input
+                  type="date"
+                  value={form.letter_date}
+                  onChange={(e) => update("letter_date", e.target.value)}
+                />
+              </Field>
+              <Field label="Employee Name (with title Mr. / Ms.)" required>
+                <Input
+                  value={form.employee_name}
+                  onChange={(e) => update("employee_name", e.target.value)}
+                  placeholder="Mr. Sajal Kumar Tamrakar"
+                />
+              </Field>
+              <Field label="Job Position / Designation" required>
+                <Input
+                  value={form.post}
+                  onChange={(e) => update("post", e.target.value)}
+                  placeholder="BUSINESS ANALYST"
+                />
+              </Field>
+              <Field label="Joining / Start Date" required>
+                <Input
+                  value={form.joining_deadline}
+                  onChange={(e) => update("joining_deadline", e.target.value)}
+                  placeholder="19th August 2024"
+                />
+              </Field>
+              <Field label="Relieving / End Date" required>
+                <Input
+                  value={form.notice_period}
+                  onChange={(e) => update("notice_period", e.target.value)}
+                  placeholder="23rd July 2026"
+                />
+              </Field>
+            </CardContent>
+          </Card>
+
+          {/* Body Content */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-base">4. Letter Body Content & Paragraphs</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Field label="Header Title (Centered, e.g. TO WHOM SO EVER IT MAY CONCERN)">
+                <Input
+                  value={form.contract_period}
+                  onChange={(e) => update("contract_period", e.target.value)}
+                  placeholder="TO WHOM SO EVER IT MAY CONCERN"
+                />
+              </Field>
+
+              <Field label="Paragraph 1 (Certification / Appointment Intro - leave empty to auto-format)">
+                <Textarea
+                  rows={3}
+                  value={
+                    form.village ||
+                    (form.contract_period?.toLowerCase().includes("offer")
+                      ? `We are pleased to offer you appointment with our organization as **${form.post || "BUSINESS ANALYST"}** effective from **${form.joining_deadline || "19th August 2024"}**.`
+                      : `This is to certify that **${form.employee_name || "Mr. Sajal Kumar Tamrakar"}** has worked with our organization from **${form.joining_deadline || "19th August 2024"}** to **${form.notice_period || "23rd July 2026"}**. He was designated as **${form.post || "BUSINESS ANALYST"}**.`)
+                  }
+                  onChange={(e) => update("village", e.target.value)}
+                  placeholder="Paragraph 1 text..."
+                />
+              </Field>
+
+              <Field label="Paragraph 2 (Tenure, Performance & Contributions Feedback)">
+                <Textarea
+                  rows={3}
+                  value={form.sales_target}
+                  onChange={(e) => update("sales_target", e.target.value)}
+                  placeholder="During his tenure, he displayed professionalism, dedication..."
+                />
+              </Field>
+
+              <Field label="Paragraph 3 (Relieving, Formalities & Appreciation / Conclusion)">
+                <Textarea
+                  rows={3}
+                  value={form.incentive_rules}
+                  onChange={(e) => update("incentive_rules", e.target.value)}
+                  placeholder="He has been relieved of his duties effective..."
+                />
+              </Field>
+              <p className="text-xs text-muted-foreground">
+                Wrap words in <strong>**double asterisks**</strong> to make them{" "}
+                <strong>bold</strong>.
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Signatory & Company Footer */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">5. Signatory & Company Footer Details</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Field label="Company Name">
+                <Input
+                  value={form.company_name || ""}
+                  onChange={(e) => update("company_name", e.target.value)}
+                  placeholder="Clarico F.E.S. (India) Pvt. Ltd."
+                />
+              </Field>
+              <Field label="Signatory Name">
+                <Input
+                  value={form.annual_increment || ""}
+                  onChange={(e) => update("annual_increment", e.target.value)}
+                  placeholder="Rahul Kumar Tiwari"
+                />
+              </Field>
+              <Field label="Signatory Designation">
+                <Input
+                  value={form.jurisdiction || ""}
+                  onChange={(e) => update("jurisdiction", e.target.value)}
+                  placeholder="Operations Manager"
+                />
+              </Field>
+              <Field label="Corporate Identity Number (CIN)">
+                <Input
+                  value={form.company_corporate_add || ""}
+                  onChange={(e) => update("company_corporate_add", e.target.value)}
+                  placeholder="U72900CT2022PTC012844"
+                />
+              </Field>
+              <Field label="Footer Disclaimer / Note" className="md:col-span-2">
+                <Input
+                  value={form.company_shop_add || ""}
+                  onChange={(e) => update("company_shop_add", e.target.value)}
+                  placeholder="Internal Communication: For internal & partner use only."
+                />
+              </Field>
             </CardContent>
           </Card>
         </div>

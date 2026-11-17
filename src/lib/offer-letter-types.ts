@@ -7,7 +7,8 @@ export type Role =
   | "other"
   | "stockiest"
   | "lifting_discount"
-  | "dealer_scheme";
+  | "dealer_scheme"
+  | "experience_letter";
 
 export interface CustomBlock {
   id: string;
@@ -65,6 +66,7 @@ export const ROLE_LABELS: Record<Role, string> = {
   stockiest: "Stockiest Certificate",
   lifting_discount: "Lifting Discount Offer",
   dealer_scheme: "Dealer Gold Scheme",
+  experience_letter: "Offer / Experience Letter",
 };
 
 export const ROLE_DEFAULTS: Record<Role, Partial<OfferLetterFormState>> = {
@@ -210,7 +212,113 @@ Thank you for your continued trust and support.`,
 
 हार्दिक शुभकामनाएँ सहित,`,
   },
+  experience_letter: {
+    letter_no: "EXP-01",
+    employee_name: "Mr. Sajal Kumar Tamrakar",
+    post: "BUSINESS ANALYST",
+    joining_deadline: "19th August 2024",
+    notice_period: "23rd July 2026",
+    contract_period: "TO WHOM SO EVER IT MAY CONCERN",
+    sales_target:
+      "During his tenure, he displayed professionalism, dedication, and contributed significantly to the organization.",
+    incentive_rules:
+      "He has been relieved of his duties effective 23rd July 2026, with all formalities completed. We sincerely appreciate his contributions and wish him success in his future endeavours.",
+    annual_increment: "Rahul Kumar Tiwari",
+    jurisdiction: "Operations Manager",
+    company_name: "Vaniki Crop Science Pvt. Ltd.",
+    company_corporate_add: "U72900CT2022PTC012844",
+    company_shop_add: "For internal & partner use only.",
+  },
 };
+
+export interface PositionTemplate {
+  key: string;
+  label: string;
+  post: string;
+  experienceTenure: string;
+  experienceRelieving: string;
+  offerDescription: string;
+}
+
+export const POSITION_TEMPLATES: PositionTemplate[] = [
+  {
+    key: "business_analyst",
+    label: "Business Analyst",
+    post: "BUSINESS ANALYST",
+    experienceTenure:
+      "During his tenure, he displayed professionalism, dedication, analytical capabilities, and contributed significantly to the organization.",
+    experienceRelieving:
+      "He has been relieved of his duties effective {endDate}, with all formalities completed. We sincerely appreciate his contributions and wish him success in his future endeavours.",
+    offerDescription:
+      "In this position, you will be responsible for analyzing market opportunities, streamlining operations, and contributing to strategic business growth initiatives.",
+  },
+  {
+    key: "sales_officer",
+    label: "Sales Officer / Territory Incharge",
+    post: "SALES OFFICER",
+    experienceTenure:
+      "During his tenure, he displayed exceptional salesmanship, field dedication, farmer relationship building, and contributed significantly to territory sales expansion.",
+    experienceRelieving:
+      "He has been relieved of his duties effective {endDate}, with all formalities completed. We sincerely appreciate his contributions and wish him success in his future endeavours.",
+    offerDescription:
+      "In this position, you will be responsible for managing dealer network, conducting farmer demonstrations, achieving revenue targets, and expanding market reach.",
+  },
+  {
+    key: "software_developer",
+    label: "Software Developer / Engineer",
+    post: "SOFTWARE DEVELOPER",
+    experienceTenure:
+      "During his tenure, he displayed outstanding technical problem-solving, code discipline, dedication, and contributed significantly to software development and system architecture.",
+    experienceRelieving:
+      "He has been relieved of his duties effective {endDate}, with all formalities completed. We sincerely appreciate his contributions and wish him success in his future endeavours.",
+    offerDescription:
+      "In this position, you will be responsible for software application development, database management, digital tools, and scalable system maintenance.",
+  },
+  {
+    key: "operations_manager",
+    label: "Operations / Branch Manager",
+    post: "OPERATIONS MANAGER",
+    experienceTenure:
+      "During his tenure, he displayed exemplary leadership, operational efficiency, team mentoring, and contributed significantly to company operations.",
+    experienceRelieving:
+      "He has been relieved of his duties effective {endDate}, with all formalities completed. We sincerely appreciate his contributions and wish him success in his future endeavours.",
+    offerDescription:
+      "In this position, you will be responsible for overseeing daily operations, leading cross-functional teams, ensuring supply chain integrity, and optimizing productivity.",
+  },
+  {
+    key: "hr_executive",
+    label: "HR Executive / Manager",
+    post: "HR EXECUTIVE",
+    experienceTenure:
+      "During his tenure, he displayed high professionalism, integrity, team coordination, and contributed significantly to human resources and office administration.",
+    experienceRelieving:
+      "He has been relieved of his duties effective {endDate}, with all formalities completed. We sincerely appreciate his contributions and wish him success in his future endeavours.",
+    offerDescription:
+      "In this position, you will oversee talent acquisition, employee relations, onboarding documentation, HR policies, and statutory compliance.",
+  },
+  {
+    key: "field_assistant",
+    label: "Field Assistant / Agronomist",
+    post: "FIELD ASSISTANT",
+    experienceTenure:
+      "During his tenure, he displayed strong commitment, agricultural field expertise, farmer support, and contributed significantly to field crop science operations.",
+    experienceRelieving:
+      "He has been relieved of his duties effective {endDate}, with all formalities completed. We sincerely appreciate his contributions and wish him success in his future endeavours.",
+    offerDescription:
+      "In this position, you will assist field operations, conduct crop health assessments, support farmers with technical guidance, and coordinate field trials.",
+  },
+  {
+    key: "accountant",
+    label: "Accountant / Billing Executive",
+    post: "ACCOUNTANT",
+    experienceTenure:
+      "During his tenure, he displayed diligence, financial accuracy, compliance adherence, and contributed significantly to accounting and ledger management.",
+    experienceRelieving:
+      "He has been relieved of his duties effective {endDate}, with all formalities completed. We sincerely appreciate his contributions and wish him success in his future endeavours.",
+    offerDescription:
+      "In this position, you will manage company accounting, ledger reconciliation, GST filings, invoice generation, and audit compliance.",
+  },
+];
 
 export function defaultFormState(role: Role = "sales"): OfferLetterFormState {
   const today = new Date().toISOString().slice(0, 10);

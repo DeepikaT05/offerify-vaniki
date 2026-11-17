@@ -25,6 +25,20 @@ function formatDateSlash(iso: string): string {
   return `${d}/${m}/${y}`;
 }
 
+function formatOrdinalDate(iso: string): string {
+  if (!iso) return "";
+  const d = iso.includes("T") ? new Date(iso) : new Date(iso + "T00:00:00");
+  if (Number.isNaN(d.getTime())) return iso;
+  const day = d.getDate();
+  let suffix = "th";
+  if (day === 1 || day === 21 || day === 31) suffix = "st";
+  else if (day === 2 || day === 22) suffix = "nd";
+  else if (day === 3 || day === 23) suffix = "rd";
+  const monthName = d.toLocaleDateString("en-US", { month: "long" });
+  const year = d.getFullYear();
+  return `${day}${suffix} ${monthName} ${year}`;
+}
+
 function renderFormattedText(text: string): React.ReactNode {
   if (!text) return "";
 
@@ -646,6 +660,170 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
 
           {/* Bottom Margin Spacer */}
           <div className="h-[15mm] w-full flex-shrink-0 z-10 relative" />
+        </section>
+      </article>
+    );
+  }
+
+  if (data.role === "experience_letter") {
+    const title = data.contract_period || "TO WHOM SO EVER IT MAY CONCERN";
+    const dateStr = formatOrdinalDate(data.letter_date);
+
+    return (
+      <article className="flex flex-col items-center gap-8 bg-muted/20 py-8 no-print-bg">
+        <style>{`
+          @media screen {
+            .no-print-bg {
+              background-color: var(--color-muted);
+            }
+          }
+          @page {
+            size: A4 portrait;
+            margin: 0mm;
+          }
+          @media print {
+            * {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+              color-adjust: exact !important;
+            }
+            html, body {
+              width: 210mm !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              background: white !important;
+            }
+            .no-print-bg {
+              background: white !important;
+              padding: 0 !important;
+              gap: 0 !important;
+              display: block !important;
+            }
+            .print-page {
+              position: relative !important;
+              box-shadow: none !important;
+              border: none !important;
+              margin: 0 !important;
+              width: 210mm !important;
+              height: 297mm !important;
+              overflow: hidden !important;
+              page-break-after: always !important;
+              break-after: page !important;
+              display: flex !important;
+              flex-direction: column !important;
+            }
+            .print-page:last-child {
+              page-break-after: avoid !important;
+              break-after: avoid !important;
+            }
+            .no-print {
+              display: none !important;
+            }
+          }
+        `}</style>
+
+        {/* Print settings toolbar */}
+        <div className="mb-2 flex flex-wrap gap-4 items-center justify-between p-4 bg-white rounded-lg border border-neutral-200 shadow-sm no-print w-[210mm] max-w-full">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-bold text-neutral-700">🖨️ Printing Configuration</span>
+          </div>
+          <div className="flex flex-wrap gap-4">
+            <label className="flex items-center gap-2 text-xs font-semibold text-neutral-600 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={usePrePrintedHeader}
+                onChange={(e) => setUsePrePrintedHeader(e.target.checked)}
+                className="rounded border-neutral-300 text-brand focus:ring-brand h-4 w-4"
+              />
+              Printing on Physical Letter Pad (hides digital letterhead image when printing)
+            </label>
+          </div>
+          <button
+            onClick={() => window.print()}
+            className="bg-brand hover:bg-brand/90 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-sm transition flex items-center gap-1.5"
+          >
+            Print Now
+          </button>
+        </div>
+
+        {/* Experience / Offer Letter Page */}
+        <section
+          className="print-page relative w-[210mm] min-h-[297mm] bg-white flex flex-col justify-between shadow-lg border border-neutral-200 print:shadow-none print:border-none print:m-0 print:w-full print:min-h-0"
+          style={{ padding: 0 }}
+        >
+          {/* Letterpad Background Image */}
+          <img
+            src={letterpadBg}
+            alt="Letterpad Background"
+            className={`absolute inset-0 w-full h-full object-fill z-0 pointer-events-none${usePrePrintedHeader ? " print:hidden" : ""}`}
+          />
+
+          {/* Spacer to push body below letterhead */}
+          <div style={{ height: "70mm" }} className="w-full flex-shrink-0 z-10 relative" />
+
+          {/* Body */}
+          <div className="flex-grow z-10 relative px-[24mm] pb-[16mm] pt-[6mm] flex flex-col justify-between">
+            <div>
+              {/* Date on Top Left */}
+              <div className="text-[13.5px] font-medium text-neutral-800 mb-8">{dateStr}</div>
+
+              {/* Title: Centered & Underlined */}
+              <div className="text-center mb-8">
+                <span className="inline-block text-[15px] font-bold tracking-wider underline underline-offset-4 text-neutral-900 uppercase">
+                  {title}
+                </span>
+              </div>
+
+              {/* Body Paragraphs */}
+              <div className="space-y-4 text-[14px] leading-[1.8] text-neutral-800 text-justify">
+                {/* Paragraph 1 */}
+                {data.village ? (
+                  <p>{renderFormattedText(data.village)}</p>
+                ) : (
+                  <p>
+                    {renderFormattedText(
+                      title.toLowerCase().includes("offer") ||
+                        title.toLowerCase().includes("appointment")
+                        ? `We are pleased to offer you appointment with our organization as **${data.post || "BUSINESS ANALYST"}** effective from **${data.joining_deadline || "19th August 2024"}**.`
+                        : `This is to certify that **${data.employee_name || "Mr. Sajal Kumar Tamrakar"}** has worked with our organization from **${data.joining_deadline || "19th August 2024"}** to **${data.notice_period || "23rd July 2026"}**. He was designated as **${data.post || "BUSINESS ANALYST"}**.`,
+                    )}
+                  </p>
+                )}
+
+                {/* Paragraph 2: Tenure performance & contribution */}
+                {data.sales_target && <p>{renderFormattedText(data.sales_target)}</p>}
+
+                {/* Paragraph 3: Relieving / Appreciation / Conclusion */}
+                {data.incentive_rules && <p>{renderFormattedText(data.incentive_rules)}</p>}
+              </div>
+
+              {/* Signatory */}
+              <div className="mt-10 space-y-1 text-[13.5px]">
+                <p className="font-bold text-neutral-900">
+                  For {data.company_name || "Clarico F.E.S. (India) Pvt. Ltd."}
+                </p>
+                <div className="h-16"></div>
+                <p className="font-bold text-neutral-900">
+                  {data.annual_increment || "Rahul Kumar Tiwari"}
+                </p>
+                <p className="text-neutral-700">{data.jurisdiction || "Operations Manager"}</p>
+              </div>
+            </div>
+
+            {/* Bottom Footer Note (CIN & Internal Communication) */}
+            <div className="mt-8 pt-3 border-t border-neutral-200 text-[11px] text-neutral-500 leading-tight space-y-0.5">
+              <p>
+                Corporate Identity Number: {data.company_corporate_add || "U72900CT2022PTC012844"}
+              </p>
+              <p>
+                {data.company_shop_add ||
+                  "Internal Communication: For internal & partner use only."}
+              </p>
+            </div>
+          </div>
+
+          {/* Bottom Margin Spacer */}
+          <div className="h-[12mm] w-full flex-shrink-0 z-10 relative" />
         </section>
       </article>
     );

@@ -1,5 +1,10 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { OfferLetterFormState, OfferLetterRow, CustomBlock } from "./offer-letter-types";
+import type {
+  OfferLetterFormState,
+  OfferLetterRow,
+  CustomBlock,
+  Role,
+} from "./offer-letter-types";
 
 // Cast: the generated Supabase types haven't been regenerated yet to include offer_letters.
 const db = supabase as unknown as {
@@ -10,7 +15,9 @@ const TABLE = "offer_letters";
 
 function rowToFormState(row: any): OfferLetterRow {
   const blocks: CustomBlock[] = Array.isArray(row.custom_blocks) ? row.custom_blocks : [];
-  return { ...row, custom_blocks: blocks } as OfferLetterRow;
+  const roleOverride = blocks.find((b) => b.id === "__actual_role__");
+  const role = roleOverride ? (roleOverride.content as Role) : row.role;
+  return { ...row, role, custom_blocks: blocks } as OfferLetterRow;
 }
 
 function getLocalLetters(): OfferLetterRow[] {
@@ -27,7 +34,9 @@ function saveLocalLetters(letters: OfferLetterRow[]) {
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem("local_offer_letters", JSON.stringify(letters));
-  } catch (e) {}
+  } catch (_e) {
+    // ignore
+  }
 }
 
 export async function listLetters(): Promise<OfferLetterRow[]> {
@@ -78,7 +87,21 @@ export async function createLetter(form: OfferLetterFormState): Promise<OfferLet
     if (!error && data) {
       return rowToFormState(data);
     }
-    if (error) throw error;
+    if (error) {
+      if (error.code === "23514") {
+        // Role check constraint: retry saving as 'other' with actual role preserved in custom_blocks
+        const custom_blocks = [
+          ...form.custom_blocks.filter((b) => b.id !== "__actual_role__"),
+          { id: "__actual_role__", heading: "__actual_role__", content: form.role },
+        ];
+        const fallbackForm = { ...form, role: "other", custom_blocks };
+        const res = await db.from(TABLE).insert(fallbackForm).select("*").single();
+        if (!res.error && res.data) {
+          return rowToFormState(res.data);
+        }
+      }
+      throw error;
+    }
   } catch (e) {
     console.warn("Supabase insert failed, saving locally:", e);
   }
@@ -125,7 +148,20 @@ export async function updateLetter(
     if (!error && data) {
       return rowToFormState(data);
     }
-    if (error) throw error;
+    if (error) {
+      if (error.code === "23514") {
+        const custom_blocks = [
+          ...form.custom_blocks.filter((b) => b.id !== "__actual_role__"),
+          { id: "__actual_role__", heading: "__actual_role__", content: form.role },
+        ];
+        const fallbackForm = { ...form, role: "other", custom_blocks };
+        const res = await db.from(TABLE).update(fallbackForm).eq("id", id).select("*").single();
+        if (!res.error && res.data) {
+          return rowToFormState(res.data);
+        }
+      }
+      throw error;
+    }
   } catch (e) {
     console.warn("Supabase update failed, updating locally:", e);
   }
