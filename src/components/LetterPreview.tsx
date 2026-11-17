@@ -668,6 +668,10 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
   if (data.role === "experience_letter") {
     const title = data.contract_period || "TO WHOM SO EVER IT MAY CONCERN";
     const dateStr = formatOrdinalDate(data.letter_date);
+    const startDateStr = formatOrdinalDate(data.joining_deadline);
+    const endDateStr = formatOrdinalDate(data.notice_period);
+    const empName = data.employee_name || "";
+    const postStr = data.post || "";
 
     return (
       <article className="flex flex-col items-center gap-8 bg-muted/20 py-8 no-print-bg">
@@ -765,7 +769,9 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
           <div className="flex-grow z-10 relative px-[24mm] pb-[16mm] pt-[6mm] flex flex-col justify-between">
             <div>
               {/* Date on Top Left */}
-              <div className="text-[13.5px] font-medium text-neutral-800 mb-8">{dateStr}</div>
+              <div className="text-[13.5px] font-medium text-neutral-800 mb-8 min-h-[1.5em]">
+                {dateStr}
+              </div>
 
               {/* Title: Centered & Underlined */}
               <div className="text-center mb-8">
@@ -784,8 +790,8 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
                     {renderFormattedText(
                       title.toLowerCase().includes("offer") ||
                         title.toLowerCase().includes("appointment")
-                        ? `We are pleased to offer you appointment with our organization as **${data.post || "BUSINESS ANALYST"}** effective from **${data.joining_deadline || "19th August 2024"}**.`
-                        : `This is to certify that **${data.employee_name || "Mr. Sajal Kumar Tamrakar"}** has worked with our organization from **${data.joining_deadline || "19th August 2024"}** to **${data.notice_period || "23rd July 2026"}**. He was designated as **${data.post || "BUSINESS ANALYST"}**.`,
+                        ? `We are pleased to offer you appointment with our organization as **${postStr || "[Job Position]"}** effective from **${startDateStr || "[Start Date]"}**.`
+                        : `This is to certify that **${empName || "[Employee Name]"}** has worked with our organization from **${startDateStr || "[Start Date]"}** to **${endDateStr || "[End Date]"}**. He/She was designated as **${postStr || "[Job Position]"}**.`,
                     )}
                   </p>
                 )}
@@ -794,32 +800,37 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
                 {data.sales_target && <p>{renderFormattedText(data.sales_target)}</p>}
 
                 {/* Paragraph 3: Relieving / Appreciation / Conclusion */}
-                {data.incentive_rules && <p>{renderFormattedText(data.incentive_rules)}</p>}
+                {data.incentive_rules && (
+                  <p>
+                    {renderFormattedText(
+                      data.incentive_rules.replace("{endDate}", endDateStr || "[End Date]"),
+                    )}
+                  </p>
+                )}
               </div>
 
               {/* Signatory */}
               <div className="mt-10 space-y-1 text-[13.5px]">
                 <p className="font-bold text-neutral-900">
-                  For {data.company_name || "Clarico F.E.S. (India) Pvt. Ltd."}
+                  For {data.company_name || "Vaniki Crop Science Pvt. Ltd."}
                 </p>
                 <div className="h-16"></div>
-                <p className="font-bold text-neutral-900">
-                  {data.annual_increment || "Rahul Kumar Tiwari"}
-                </p>
-                <p className="text-neutral-700">{data.jurisdiction || "Operations Manager"}</p>
+                {data.annual_increment ? (
+                  <p className="font-bold text-neutral-900">{data.annual_increment}</p>
+                ) : null}
+                <p className="text-neutral-700">{data.jurisdiction || "Authorized Signatory"}</p>
               </div>
             </div>
 
             {/* Bottom Footer Note (CIN & Internal Communication) */}
-            <div className="mt-8 pt-3 border-t border-neutral-200 text-[11px] text-neutral-500 leading-tight space-y-0.5">
-              <p>
-                Corporate Identity Number: {data.company_corporate_add || "U72900CT2022PTC012844"}
-              </p>
-              <p>
-                {data.company_shop_add ||
-                  "Internal Communication: For internal & partner use only."}
-              </p>
-            </div>
+            {(data.company_corporate_add || data.company_shop_add) && (
+              <div className="mt-8 pt-3 border-t border-neutral-200 text-[11px] text-neutral-500 leading-tight space-y-0.5">
+                {data.company_corporate_add ? (
+                  <p>Corporate Identity Number: {data.company_corporate_add}</p>
+                ) : null}
+                {data.company_shop_add ? <p>{data.company_shop_add}</p> : null}
+              </div>
+            )}
           </div>
 
           {/* Bottom Margin Spacer */}

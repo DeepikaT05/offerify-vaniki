@@ -214,20 +214,20 @@ Thank you for your continued trust and support.`,
   },
   experience_letter: {
     letter_no: "EXP-01",
-    employee_name: "Mr. Sajal Kumar Tamrakar",
-    post: "BUSINESS ANALYST",
-    joining_deadline: "19th August 2024",
-    notice_period: "23rd July 2026",
+    employee_name: "",
+    post: "SALES OFFICER",
+    joining_deadline: "",
+    notice_period: "",
     contract_period: "TO WHOM SO EVER IT MAY CONCERN",
     sales_target:
-      "During his tenure, he displayed professionalism, dedication, and contributed significantly to the organization.",
+      "During his/her tenure, he/she displayed professionalism, dedication, and contributed significantly to the organization.",
     incentive_rules:
-      "He has been relieved of his duties effective 23rd July 2026, with all formalities completed. We sincerely appreciate his contributions and wish him success in his future endeavours.",
-    annual_increment: "Rahul Kumar Tiwari",
-    jurisdiction: "Operations Manager",
+      "He/She has been relieved of duties with all formalities completed. We sincerely appreciate the contributions and wish success in all future endeavours.",
+    annual_increment: "",
+    jurisdiction: "Authorized Signatory",
     company_name: "Vaniki Crop Science Pvt. Ltd.",
-    company_corporate_add: "U72900CT2022PTC012844",
-    company_shop_add: "For internal & partner use only.",
+    company_corporate_add: "",
+    company_shop_add: "Internal Communication: For internal & partner use only.",
   },
 };
 
@@ -363,4 +363,18 @@ Incentive Pay on Year End.
 
 export function applyRoleDefaults(state: OfferLetterFormState, role: Role): OfferLetterFormState {
   return { ...state, role, ...ROLE_DEFAULTS[role] };
+}
+
+export function formatOrdinalDate(iso: string): string {
+  if (!iso) return "";
+  const d = iso.includes("T") ? new Date(iso) : new Date(iso + "T00:00:00");
+  if (Number.isNaN(d.getTime())) return iso;
+  const day = d.getDate();
+  let suffix = "th";
+  if (day === 1 || day === 21 || day === 31) suffix = "st";
+  else if (day === 2 || day === 22) suffix = "nd";
+  else if (day === 3 || day === 23) suffix = "rd";
+  const monthName = d.toLocaleDateString("en-US", { month: "long" });
+  const year = d.getFullYear();
+  return `${day}${suffix} ${monthName} ${year}`;
 }

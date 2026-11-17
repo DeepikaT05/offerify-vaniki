@@ -33,6 +33,7 @@ import {
   defaultFormState,
   ROLE_LABELS,
   POSITION_TEMPLATES,
+  formatOrdinalDate,
   type CustomBlock,
   type OfferLetterFormState,
   type Role,
@@ -812,10 +813,16 @@ export function OfferLetterForm({ initial, letterId }: Props) {
                       onClick={() => {
                         update("post", tmpl.post);
                         update("sales_target", tmpl.experienceTenure);
-                        const endD = form.notice_period || "23rd July 2026";
+                        const endD = form.notice_period
+                          ? formatOrdinalDate(form.notice_period)
+                          : "";
                         update(
                           "incentive_rules",
-                          tmpl.experienceRelieving.replace("{endDate}", endD),
+                          endD
+                            ? tmpl.experienceRelieving.replace("{endDate}", endD)
+                            : tmpl.experienceRelieving
+                                .replace("effective {endDate}, ", "")
+                                .replace("effective {endDate} ", ""),
                         );
                         toast.success(`Loaded ${tmpl.label} details`);
                       }}
@@ -850,16 +857,18 @@ export function OfferLetterForm({ initial, letterId }: Props) {
                   }
                   onClick={() => {
                     update("contract_period", "TO WHOM SO EVER IT MAY CONCERN");
-                    const endD = form.notice_period || "23rd July 2026";
+                    const endD = form.notice_period ? formatOrdinalDate(form.notice_period) : "";
                     update(
                       "incentive_rules",
-                      `He has been relieved of his duties effective ${endD}, with all formalities completed. We sincerely appreciate his contributions and wish him success in his future endeavours.`,
+                      endD
+                        ? `He/She has been relieved of duties effective ${endD}, with all formalities completed. We sincerely appreciate the contributions and wish success in all future endeavours.`
+                        : "He/She has been relieved of duties with all formalities completed. We sincerely appreciate the contributions and wish success in all future endeavours.",
                     );
                     update("village", "");
                     toast.info("Switched to Experience & Relieving Certificate");
                   }}
                 >
-                  Experience & Relieving Certificate (Clarico Format)
+                  Experience & Relieving Certificate
                 </Button>
                 <Button
                   type="button"
@@ -869,9 +878,12 @@ export function OfferLetterForm({ initial, letterId }: Props) {
                   }
                   onClick={() => {
                     update("contract_period", "OFFER LETTER");
+                    const startD = form.joining_deadline
+                      ? formatOrdinalDate(form.joining_deadline)
+                      : "[Start Date]";
                     update(
                       "village",
-                      `We are pleased to offer you appointment with our organization as **${form.post || "BUSINESS ANALYST"}** effective from **${form.joining_deadline || "19th August 2024"}**.`,
+                      `We are pleased to offer you appointment with our organization as **${form.post || "SALES OFFICER"}** effective from **${startD}**.`,
                     );
                     update(
                       "incentive_rules",
@@ -910,28 +922,28 @@ export function OfferLetterForm({ initial, letterId }: Props) {
                 <Input
                   value={form.employee_name}
                   onChange={(e) => update("employee_name", e.target.value)}
-                  placeholder="Mr. Sajal Kumar Tamrakar"
+                  placeholder="e.g. Mr. Rajesh Kumar"
                 />
               </Field>
               <Field label="Job Position / Designation" required>
                 <Input
                   value={form.post}
                   onChange={(e) => update("post", e.target.value)}
-                  placeholder="BUSINESS ANALYST"
+                  placeholder="e.g. SALES OFFICER"
                 />
               </Field>
-              <Field label="Joining / Start Date" required>
+              <Field label="Joining / Start Date (Dropdown Picker)" required>
                 <Input
+                  type="date"
                   value={form.joining_deadline}
                   onChange={(e) => update("joining_deadline", e.target.value)}
-                  placeholder="19th August 2024"
                 />
               </Field>
-              <Field label="Relieving / End Date" required>
+              <Field label="Relieving / End Date (Dropdown Picker)" required>
                 <Input
+                  type="date"
                   value={form.notice_period}
                   onChange={(e) => update("notice_period", e.target.value)}
-                  placeholder="23rd July 2026"
                 />
               </Field>
             </CardContent>
@@ -954,14 +966,9 @@ export function OfferLetterForm({ initial, letterId }: Props) {
               <Field label="Paragraph 1 (Certification / Appointment Intro - leave empty to auto-format)">
                 <Textarea
                   rows={3}
-                  value={
-                    form.village ||
-                    (form.contract_period?.toLowerCase().includes("offer")
-                      ? `We are pleased to offer you appointment with our organization as **${form.post || "BUSINESS ANALYST"}** effective from **${form.joining_deadline || "19th August 2024"}**.`
-                      : `This is to certify that **${form.employee_name || "Mr. Sajal Kumar Tamrakar"}** has worked with our organization from **${form.joining_deadline || "19th August 2024"}** to **${form.notice_period || "23rd July 2026"}**. He was designated as **${form.post || "BUSINESS ANALYST"}**.`)
-                  }
+                  value={form.village || ""}
                   onChange={(e) => update("village", e.target.value)}
-                  placeholder="Paragraph 1 text..."
+                  placeholder="Leave empty to auto-format dynamically from Employee Name, Dates and Job Position, or enter custom paragraph..."
                 />
               </Field>
 
@@ -970,7 +977,7 @@ export function OfferLetterForm({ initial, letterId }: Props) {
                   rows={3}
                   value={form.sales_target}
                   onChange={(e) => update("sales_target", e.target.value)}
-                  placeholder="During his tenure, he displayed professionalism, dedication..."
+                  placeholder="During his/her tenure, he/she displayed professionalism, dedication..."
                 />
               </Field>
 
@@ -979,7 +986,7 @@ export function OfferLetterForm({ initial, letterId }: Props) {
                   rows={3}
                   value={form.incentive_rules}
                   onChange={(e) => update("incentive_rules", e.target.value)}
-                  placeholder="He has been relieved of his duties effective..."
+                  placeholder="He/She has been relieved of duties with all formalities completed..."
                 />
               </Field>
               <p className="text-xs text-muted-foreground">
@@ -999,28 +1006,28 @@ export function OfferLetterForm({ initial, letterId }: Props) {
                 <Input
                   value={form.company_name || ""}
                   onChange={(e) => update("company_name", e.target.value)}
-                  placeholder="Clarico F.E.S. (India) Pvt. Ltd."
+                  placeholder="Vaniki Crop Science Pvt. Ltd."
                 />
               </Field>
               <Field label="Signatory Name">
                 <Input
                   value={form.annual_increment || ""}
                   onChange={(e) => update("annual_increment", e.target.value)}
-                  placeholder="Rahul Kumar Tiwari"
+                  placeholder="e.g. Authorized Signatory / Name"
                 />
               </Field>
               <Field label="Signatory Designation">
                 <Input
                   value={form.jurisdiction || ""}
                   onChange={(e) => update("jurisdiction", e.target.value)}
-                  placeholder="Operations Manager"
+                  placeholder="e.g. Director / Operations Manager"
                 />
               </Field>
               <Field label="Corporate Identity Number (CIN)">
                 <Input
                   value={form.company_corporate_add || ""}
                   onChange={(e) => update("company_corporate_add", e.target.value)}
-                  placeholder="U72900CT2022PTC012844"
+                  placeholder="e.g. U72900CT2022PTC012844 (Optional)"
                 />
               </Field>
               <Field label="Footer Disclaimer / Note" className="md:col-span-2">
