@@ -940,7 +940,6 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
           {/* Letter Meta */}
           <div className="flex justify-between items-center text-[13px] font-bold mb-5 mt-2">
             <div>No.{data.letter_no}</div>
-            <div>Date:{formatDate(data.letter_date)}</div>
           </div>
 
           {/* Recipient */}
