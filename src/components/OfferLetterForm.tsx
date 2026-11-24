@@ -911,13 +911,6 @@ export function OfferLetterForm({ initial, letterId }: Props) {
                   placeholder="EXP-01"
                 />
               </Field>
-              <Field label="Issue Date" required>
-                <Input
-                  type="date"
-                  value={form.letter_date}
-                  onChange={(e) => update("letter_date", e.target.value)}
-                />
-              </Field>
               <Field label="Employee Name (with title Mr. / Ms.)" required>
                 <Input
                   value={form.employee_name}

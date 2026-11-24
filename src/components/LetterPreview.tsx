@@ -667,7 +667,6 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
 
   if (data.role === "experience_letter") {
     const title = data.contract_period || "TO WHOM SO EVER IT MAY CONCERN";
-    const dateStr = formatOrdinalDate(data.letter_date);
     const startDateStr = formatOrdinalDate(data.joining_deadline);
     const endDateStr = formatOrdinalDate(data.notice_period);
     const empName = data.employee_name || "";
@@ -768,11 +767,6 @@ export function LetterPreview({ data }: { data: OfferLetterFormState }) {
           {/* Body */}
           <div className="flex-grow z-10 relative px-[24mm] pb-[16mm] pt-[6mm] flex flex-col justify-between">
             <div>
-              {/* Date on Top Left */}
-              <div className="text-[13.5px] font-medium text-neutral-800 mb-8 min-h-[1.5em]">
-                {dateStr}
-              </div>
-
               {/* Title: Centered & Underlined */}
               <div className="text-center mb-8">
                 <span className="inline-block text-[15px] font-bold tracking-wider underline underline-offset-4 text-neutral-900 uppercase">
